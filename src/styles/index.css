@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Design tokens — Lemos International
+   Navy / ember flame identity, editorial industrial system
+   ============================================================ */
+@layer base {
+  :root {
+    --nav-h: 5.25rem;
+    --edge: clamp(1.25rem, 5vw, 5rem);
+    --brand-gradient: linear-gradient(135deg, #f26522 0%, #ff7a2e 45%, #ffa430 100%);
+    --brand-navy-gradient: linear-gradient(160deg, #1b2c72 0%, #132258 55%, #0e1a4a 100%);
+  }
+
+  * {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+
+  ::selection {
+    background: #f26522;
+    color: #fff;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .edge {
+    padding-left: var(--edge);
+    padding-right: var(--edge);
+  }
+
+  .eyebrow {
+    @apply font-mono text-[0.72rem] uppercase tracking-eyebrow text-ember font-medium;
+  }
+
+  .rule {
+    @apply border-0 border-t border-line;
+  }
+
+  /* Text that carries the flame gradient */
+  .text-ember-gradient {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Editorial outline number (index markers) */
+  .index-num {
+    @apply font-display font-extrabold leading-none;
+    -webkit-text-stroke: 1px currentColor;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    transition: background-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+}
+
+/* Reveal primitive — initial hidden state before JS hydrates motion */
+.reveal-init {
+  opacity: 0;
+  transform: translateY(24px);
+}

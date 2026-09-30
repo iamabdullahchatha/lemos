@@ -1,0 +1,69 @@
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { clipReveal, imageZoom, viewportOnce } from '@/lib/motion'
+
+// Clip-wipe image reveal with a paired inner zoom-out.
+// `ratio` sets the aspect box (e.g. '16/10', '4/5').
+// Falls back to a branded placeholder if the image fails to load.
+export default function ImageReveal({
+  src,
+  alt = '',
+  ratio = '16/10',
+  className = '',
+  imgClassName = '',
+  overlay = false,
+  children,
+}) {
+  const [failed, setFailed] = useState(false)
+  const showImg = src && !failed
+
+  return (
+    <motion.figure
+      variants={clipReveal}
+      initial="hidden"
+      whileInView="show"
+      viewport={viewportOnce}
+      className={`relative overflow-hidden bg-navy-900 ${className}`}
+      style={{ aspectRatio: ratio }}
+    >
+      <motion.div variants={imageZoom} className="absolute inset-0">
+        {showImg ? (
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            onError={() => setFailed(true)}
+            className={`h-full w-full object-cover ${imgClassName}`}
+          />
+        ) : (
+          <Placeholder />
+        )}
+      </motion.div>
+      {overlay && (
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-navy-950/10 to-transparent"
+        />
+      )}
+      {children}
+    </motion.figure>
+  )
+}
+
+function Placeholder() {
+  return (
+    <div className="relative flex h-full w-full items-center justify-center bg-navy-900">
+      <div
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            'linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)',
+          backgroundSize: '48px 48px',
+        }}
+      />
+      <span className="relative font-mono text-[0.68rem] uppercase tracking-[0.2em] text-paper/40">
+        Lemos · Imagery
+      </span>
+    </div>
+  )
+}
