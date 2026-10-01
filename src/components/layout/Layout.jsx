@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from './Navbar'
@@ -24,7 +24,10 @@ export default function Layout() {
       <main id="main">
         <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={pathname}>
-            <Outlet />
+            {/* Pages are lazy chunks; hold the space with the hero's navy while one loads */}
+            <Suspense fallback={<div className="min-h-[100svh] bg-navy-950" />}>
+              <Outlet />
+            </Suspense>
           </PageTransition>
         </AnimatePresence>
       </main>

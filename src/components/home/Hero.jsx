@@ -5,7 +5,7 @@ import Button3D from '@/components/ui/Button3D'
 import TiltCard from '@/components/ui/TiltCard'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { EASE, lineChild } from '@/lib/motion'
-import { img, homeHeroSlides } from '@/data/media'
+import { pic, homeHeroSlides } from '@/data/media'
 import { services } from '@/data/services'
 import { industries } from '@/data/industries'
 import { processSteps } from '@/data/process'
@@ -42,6 +42,17 @@ export default function Hero() {
     return () => clearTimeout(t)
   }, [active])
 
+  // Only the first slide downloads with the page; each following slide is
+  // mounted one step ahead of when it is shown, so it never competes with
+  // the initial load.
+  const [mounted, setMounted] = useState(1)
+  useEffect(() => {
+    const want = Math.min(homeHeroSlides.length, active + 2)
+    if (want <= mounted) return
+    const t = setTimeout(() => setMounted(want), active === 0 ? 2500 : 0)
+    return () => clearTimeout(t)
+  }, [active, mounted])
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -68,13 +79,15 @@ export default function Hero() {
           className="absolute inset-0"
         >
           {homeHeroSlides.map((s, i) =>
-            failed[i] ? null : (
+            failed[i] || (i >= mounted && i !== active) ? null : (
               <motion.img
                 key={s.id}
-                src={img(s.id, 2000, 75)}
+                {...pic(s.id, 2000, 75)}
+                sizes="100vw"
                 alt={i === active ? s.alt : ''}
                 aria-hidden={i !== active}
                 fetchpriority={i === 0 ? 'high' : 'low'}
+                decoding={i === 0 ? 'sync' : 'async'}
                 onError={() => setFailed((f) => ({ ...f, [i]: true }))}
                 initial={{ opacity: i === 0 ? 1 : 0, scale: reduce ? 1 : 1.12 }}
                 animate={{

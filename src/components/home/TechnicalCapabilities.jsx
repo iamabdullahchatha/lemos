@@ -5,7 +5,7 @@ import Eyebrow from '@/components/ui/Eyebrow'
 import Reveal from '@/components/ui/Reveal'
 import TiltCard from '@/components/ui/TiltCard'
 import { technicalCapabilities } from '@/data/capabilities'
-import { equipmentImages, img } from '@/data/media'
+import { pic, equipmentImages } from '@/data/media'
 import { EASE, viewportOnce } from '@/lib/motion'
 
 const chip = {
@@ -31,7 +31,9 @@ function EquipmentCard({ cap, i }) {
           >
             {!failed && (
               <img
-                src={img(equipmentImages[cap.label], 600)}
+                {...pic(equipmentImages[cap.label], 600)}
+                decoding="async"
+                sizes="(min-width: 1024px) 20vw, 50vw"
                 alt=""
                 loading="lazy"
                 onError={() => setFailed(true)}

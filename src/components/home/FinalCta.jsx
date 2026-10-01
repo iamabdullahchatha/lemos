@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import Container from '@/components/ui/Container'
 import Button3D from '@/components/ui/Button3D'
 import { lineParent, lineChild, viewportOnce, EASE } from '@/lib/motion'
-import { img, media } from '@/data/media'
+import { pic, media } from '@/data/media'
 
 const LINES = ['Ready to build', "what's next?"]
 
@@ -23,7 +23,9 @@ export default function FinalCta() {
       {/* Parallax image layer */}
       <motion.div style={{ y: imgY }} className="absolute inset-0 -top-[8%] h-[116%]">
         <img
-          src={img(media.finalCta, 2200)}
+          {...pic(media.finalCta, 2200)}
+          loading="lazy"
+          decoding="async"
           alt=""
           aria-hidden="true"
           onError={(e) => (e.currentTarget.style.opacity = '0')}

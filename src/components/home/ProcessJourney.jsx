@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useScroll, useSpring, useTransform } from 'fra
 import Container from '@/components/ui/Container'
 import Eyebrow from '@/components/ui/Eyebrow'
 import { processSteps } from '@/data/process'
-import { processImages, img } from '@/data/media'
+import { pic, processImages } from '@/data/media'
 import { EASE } from '@/lib/motion'
 
 const N = processSteps.length
@@ -113,7 +113,9 @@ function DeckJourney() {
           <AnimatePresence initial={false}>
             <motion.img
               key={step.key}
-              src={img(processImages[step.key], 800, 50)}
+              {...pic(processImages[step.key], 800, 50)}
+              decoding="async"
+              sizes="60vw"
               alt=""
               initial={{ opacity: 0, scale: 1.25 }}
               animate={{ opacity: 0.32, scale: 1.15 }}
@@ -269,7 +271,9 @@ function DeckCard({ step, i, pos, active }) {
         }`}
       >
         <img
-          src={img(processImages[step.key], 1400)}
+          {...pic(processImages[step.key], 1400)}
+          decoding="async"
+          sizes="(min-width: 1024px) 55vw, 100vw"
           alt={step.title}
           loading="lazy"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
@@ -368,7 +372,9 @@ function TimelineJourney() {
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <img
-                      src={img(processImages[step.key], 1000)}
+                      {...pic(processImages[step.key], 1000)}
+                      decoding="async"
+                      sizes="90vw"
                       alt={step.title}
                       loading="lazy"
                       onError={(e) => (e.currentTarget.style.opacity = '0')}

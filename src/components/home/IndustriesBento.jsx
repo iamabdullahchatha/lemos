@@ -9,7 +9,7 @@ import TiltCard from '@/components/ui/TiltCard'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { ArrowIcon } from '@/components/layout/NavIcons'
 import { industries, industryDetail } from '@/data/industries'
-import { img, industryCardImages } from '@/data/media'
+import { pic, industryCardImages } from '@/data/media'
 import { EASE, lineChild, lineParent, viewportOnce } from '@/lib/motion'
 
 // Bento placement (desktop 12-col, 2 rows); feature tile first
@@ -44,7 +44,9 @@ function IndustryTile({ ind, i }) {
           <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.75rem] bg-navy-900 shadow-[0_40px_70px_-38px_rgba(8,15,46,0.75)]">
             {!failed && (
               <img
-                src={img(industryCardImages[ind.slug], feature ? 1400 : 1000)}
+                {...pic(industryCardImages[ind.slug], feature ? 1400 : 1000)}
+                decoding="async"
+                sizes={feature ? '(min-width: 1024px) 60vw, 100vw' : '(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw'}
                 alt=""
                 loading="lazy"
                 onError={() => setFailed(true)}

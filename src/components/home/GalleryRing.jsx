@@ -12,7 +12,7 @@ import Container from '@/components/ui/Container'
 import Eyebrow from '@/components/ui/Eyebrow'
 import Reveal from '@/components/ui/Reveal'
 import Button3D from '@/components/ui/Button3D'
-import { galleryImages, img } from '@/data/media'
+import { pic, galleryImages } from '@/data/media'
 import { EASE, lineChild, lineParent, viewportOnce } from '@/lib/motion'
 
 const N = galleryImages.length
@@ -30,7 +30,9 @@ function Panel({ item, i }) {
       <figure className="backface-hidden absolute inset-0 overflow-hidden rounded-[1.5rem] bg-navy-900 shadow-[0_40px_60px_-30px_rgba(8,15,46,0.7)] ring-1 ring-black/5">
         {!failed && (
           <img
-            src={img(item.id, 700)}
+            {...pic(item.id, 700)}
+            decoding="async"
+            sizes="(min-width: 1024px) 22vw, 60vw"
             alt={item.label}
             loading="lazy"
             draggable="false"

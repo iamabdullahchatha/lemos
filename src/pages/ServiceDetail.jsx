@@ -12,7 +12,7 @@ import ServiceIcon from '@/components/icons/ServiceIcon'
 import { ArrowIcon } from '@/components/layout/NavIcons'
 import { services, getService } from '@/data/services'
 import { getServiceContent } from '@/data/serviceContent'
-import { media, serviceHeroes, serviceSecondary, serviceEquipmentImages, img } from '@/data/media'
+import { pic, media, serviceHeroes, serviceSecondary, serviceEquipmentImages } from '@/data/media'
 import { industries } from '@/data/industries'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 import NotFound from './NotFound'
@@ -78,7 +78,10 @@ function ServiceHero({ service, content }) {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
-          src={img(serviceHeroes[service.slug], 2200)}
+          {...pic(serviceHeroes[service.slug], 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt={service.title}
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
@@ -656,7 +659,9 @@ function ServiceCta({ next }) {
     <section ref={ref} className="relative flex min-h-[70vh] items-center overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ y: imgY }} className="absolute inset-0 -top-[8%] h-[116%]">
         <img
-          src={img(media.serviceCta, 2000)}
+          {...pic(media.serviceCta, 2000)}
+          loading="lazy"
+          decoding="async"
           alt=""
           aria-hidden="true"
           onError={(e) => (e.currentTarget.style.opacity = '0')}

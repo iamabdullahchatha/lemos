@@ -40,6 +40,24 @@
     <meta name="twitter:image:alt" content="Lemos International engineer overlooking an offshore oil platform at sunset" />
     <link rel="image_src" href="%SITE_URL%/brand/lemos-og-image.jpg" />
 
+    <!-- All photography is served from Unsplash's CDN: open the connection early. -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <script>
+      // Home only: start downloading the first hero photo before the app bundle
+      // runs. URLs must match homeHeroSlides[0] and srcSet() in src/data/media.js
+      // exactly, or the browser fetches the photo twice.
+      if (location.pathname === '/') {
+        var l = document.createElement('link')
+        l.rel = 'preload'
+        l.as = 'image'
+        l.fetchPriority = 'high'
+        l.imageSizes = '100vw'
+        l.imageSrcset = [480, 640, 828, 1080, 1280, 1600, 1920, 2000].map(function (w) {
+          return 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=' + w + '&q=75&auto=format&fit=crop ' + w + 'w'
+        }).join(', ')
+        document.head.appendChild(l)
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

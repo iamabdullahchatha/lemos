@@ -13,7 +13,7 @@ import { ArrowIcon } from '@/components/layout/NavIcons'
 import { industries, industryDetail, industryPageContent, getIndustry } from '@/data/industries'
 import { getService } from '@/data/services'
 import { processSteps } from '@/data/process'
-import { industryPages, img } from '@/data/media'
+import { pic, industryPages } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 import NotFound from './NotFound'
 
@@ -73,7 +73,10 @@ function IndustryHero({ industry, content, detail, pics }) {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
-          src={img(pics.hero, 2200)}
+          {...pic(pics.hero, 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt={`${industry.title} facility`}
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"

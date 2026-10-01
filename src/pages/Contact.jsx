@@ -9,7 +9,7 @@ import Photo from '@/components/ui/Photo'
 import ParallaxImage from '@/components/ui/ParallaxImage'
 import { site } from '@/data/site'
 import { services } from '@/data/services'
-import { contactPage, img, media } from '@/data/media'
+import { pic, contactPage, media } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 
 const PROJECT_TYPES = [
@@ -77,7 +77,10 @@ function ContactHero() {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale }} className="absolute inset-0">
         <img
-          src={img(media.contactHero, 2200)}
+          {...pic(media.contactHero, 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt="Industrial engineering facility"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
@@ -640,7 +643,7 @@ function ContactCta() {
   return (
     <section className="relative overflow-hidden bg-navy-950 py-28 text-paper lg:py-36">
       <div aria-hidden="true" className="absolute inset-0">
-        <ParallaxImage src={img(contactPage.cta, 2000)} ratio="auto" speed={90} className="h-full w-full" />
+        <ParallaxImage {...pic(contactPage.cta, 2000)} ratio="auto" speed={90} className="h-full w-full" />
       </div>
       <span aria-hidden="true" className="absolute inset-0 bg-navy-950/80" />
       <span aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_10%,rgba(3,7,25,0.85)_75%)]" />

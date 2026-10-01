@@ -6,7 +6,7 @@ import TiltCard from '@/components/ui/TiltCard'
 import AnimatedLine from '@/components/ui/AnimatedLine'
 import { motion } from 'framer-motion'
 import { lineParent, lineChild, viewportOnce } from '@/lib/motion'
-import { img, media } from '@/data/media'
+import { pic, media } from '@/data/media'
 
 const WORDS = ['Engineering.', 'Fabrication.', 'Execution.']
 
@@ -58,7 +58,8 @@ export default function Statement() {
                 <div className="relative [transform-style:preserve-3d]">
                   <div className="overflow-hidden rounded-[1.75rem] shadow-[0_50px_90px_-40px_rgba(8,15,46,0.55)]">
                     <ParallaxImage
-                      src={img(media.statement, 1400)}
+                      {...pic(media.statement, 1400)}
+                      sizes="(min-width: 1024px) 40vw, 100vw"
                       alt="Fabricator cutting steel in the workshop, sparks flying"
                       ratio="4/5"
                       speed={60}

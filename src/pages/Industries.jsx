@@ -11,7 +11,7 @@ import ServiceIcon from '@/components/icons/ServiceIcon'
 import { ArrowIcon } from '@/components/layout/NavIcons'
 import { industries, industryDetail as detail, industryPageContent } from '@/data/industries'
 import { services, getService } from '@/data/services'
-import { industriesCta, industryBlockImages, industryImages, img, media } from '@/data/media'
+import { pic, industriesCta, industryBlockImages, industryImages, media } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 
 const darkEyebrow = '!text-amber [&>span]:bg-amber/60'
@@ -75,7 +75,10 @@ function IndustriesHero() {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
-          src={img(media.industriesHero, 2200)}
+          {...pic(media.industriesHero, 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt="Refinery storage tanks in evening light"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
@@ -322,7 +325,9 @@ function SectorChapter({ ind, i }) {
           <div className="relative aspect-[16/10] rounded-[2rem] [transform-style:preserve-3d] sm:aspect-[16/9]">
             <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[2rem] bg-navy-900 shadow-[0_50px_90px_-45px_rgba(8,15,46,0.8)]">
               <img
-                src={img(industryBlockImages[ind.slug], 1600)}
+                {...pic(industryBlockImages[ind.slug], 1600)}
+                decoding="async"
+                sizes="(min-width: 1024px) 60vw, 100vw"
                 alt=""
                 loading="lazy"
                 onError={(e) => (e.currentTarget.style.opacity = '0')}
@@ -360,7 +365,9 @@ function SectorChapter({ ind, i }) {
               }`}
             >
               <img
-                src={img(industryImages[ind.slug], 800)}
+                {...pic(industryImages[ind.slug], 800)}
+                decoding="async"
+                sizes="18rem"
                 alt=""
                 loading="lazy"
                 onError={(e) => (e.currentTarget.style.opacity = '0')}
@@ -522,7 +529,9 @@ function IndustriesCta() {
     <section ref={ref} className="relative flex min-h-[72vh] items-center overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ y: imgY }} className="absolute inset-0 -top-[8%] h-[116%]">
         <img
-          src={img(industriesCta, 2000)}
+          {...pic(industriesCta, 2000)}
+          loading="lazy"
+          decoding="async"
           alt=""
           aria-hidden="true"
           onError={(e) => (e.currentTarget.style.opacity = '0')}

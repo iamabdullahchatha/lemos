@@ -12,7 +12,7 @@ import { ArrowIcon } from '@/components/layout/NavIcons'
 import { services } from '@/data/services'
 import { processSteps } from '@/data/process'
 import { industries } from '@/data/industries'
-import { img, servicesPage } from '@/data/media'
+import { pic, servicesPage } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 
 const darkEyebrow = '!text-amber [&>span]:bg-amber/60'
@@ -62,7 +62,10 @@ function ServicesHero() {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
-          src={img(servicesPage.hero, 2200)}
+          {...pic(servicesPage.hero, 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt="Welder at work in a fabrication shop"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
@@ -191,7 +194,9 @@ function ServiceCard({ s, i }) {
           <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.75rem] bg-navy-900 shadow-[0_40px_70px_-38px_rgba(8,15,46,0.75)]">
             {!failed && (
               <img
-                src={img(servicesPage.cards[s.slug], 1200)}
+                {...pic(servicesPage.cards[s.slug], 1200)}
+                decoding="async"
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 alt=""
                 loading="lazy"
                 onError={() => setFailed(true)}
@@ -450,7 +455,9 @@ function ServicesIndustries() {
                 <div className="relative flex aspect-[4/5] flex-col justify-between rounded-2xl p-5 [transform-style:preserve-3d] max-md:aspect-auto max-md:min-h-[11rem]">
                   <span aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-2xl bg-navy-900 shadow-[0_5px_0_#030719,0_26px_36px_-20px_rgba(8,15,46,0.6)]">
                     <img
-                      src={img(servicesPage.industries[ind.slug], 700)}
+                      {...pic(servicesPage.industries[ind.slug], 700)}
+                      decoding="async"
+                      sizes="(min-width: 1024px) 18vw, 50vw"
                       alt=""
                       loading="lazy"
                       onError={(e) => (e.currentTarget.style.opacity = '0')}

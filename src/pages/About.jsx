@@ -16,7 +16,7 @@ import { services } from '@/data/services'
 import { processSteps } from '@/data/process'
 import { qualityPillars } from '@/data/capabilities'
 import { industries } from '@/data/industries'
-import { aboutImages, aboutPage, aboutSectorImages, img, media, valueImages } from '@/data/media'
+import { pic, aboutImages, aboutPage, aboutSectorImages, media, valueImages } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 
 const chapters = [
@@ -115,7 +115,10 @@ function AboutHero() {
     <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
-          src={img(media.aboutHero, 2200)}
+          {...pic(media.aboutHero, 2200)}
+          fetchpriority="high"
+          decoding="async"
+          sizes="100vw"
           alt="Lemos International engineering team on site"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
@@ -354,7 +357,7 @@ function CompanyStory() {
                 <TiltCard max={6} cardClassName="rounded-[1.75rem]">
                   <div className="relative [transform-style:preserve-3d]">
                     <div className="overflow-hidden rounded-[1.75rem] ring-1 ring-white/10 shadow-[0_50px_80px_-40px_rgba(0,0,0,0.9)]">
-                      <ParallaxImage src={img(c.image, 1400)} alt={c.title} ratio="16/11" speed={50} className="w-full" imgClassName="transition-transform duration-[1.4s] ease-editorial group-hover:scale-105" />
+                      <ParallaxImage {...pic(c.image, 1400)} sizes="(min-width: 1024px) 50vw, 100vw" alt={c.title} ratio="16/11" speed={50} className="w-full" imgClassName="transition-transform duration-[1.4s] ease-editorial group-hover:scale-105" />
                     </div>
                     <span className="absolute -bottom-5 left-6 rounded-full bg-paper px-4 py-2 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-ink shadow-[0_5px_0_#c9c3b5,0_20px_30px_-12px_rgba(0,0,0,0.6)] [transform:translateZ(50px)]">
                       Chapter {c.index} · {c.tag}
@@ -504,7 +507,7 @@ function SafetyQuality() {
   return (
     <section className="relative overflow-hidden bg-navy-950 py-24 text-paper lg:py-36">
       <div aria-hidden="true" className="absolute inset-0">
-        <ParallaxImage src={img(aboutPage.safety, 2000)} ratio="auto" speed={80} className="h-full w-full" />
+        <ParallaxImage {...pic(aboutPage.safety, 2000)} ratio="auto" speed={80} className="h-full w-full" />
       </div>
       <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/90 to-navy-950/60" />
       <Container className="relative">
@@ -747,7 +750,7 @@ function AboutCta() {
   return (
     <section className="relative overflow-hidden bg-navy-950 py-28 text-paper lg:py-40">
       <div aria-hidden="true" className="absolute inset-0">
-        <ParallaxImage src={img(aboutPage.cta, 2000)} ratio="auto" speed={90} className="h-full w-full" />
+        <ParallaxImage {...pic(aboutPage.cta, 2000)} ratio="auto" speed={90} className="h-full w-full" />
       </div>
       <span aria-hidden="true" className="absolute inset-0 bg-navy-950/75" />
       <span aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_10%,rgba(3,7,25,0.85)_75%)]" />

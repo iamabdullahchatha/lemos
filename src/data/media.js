@@ -14,8 +14,17 @@
 const BASE = 'https://images.unsplash.com'
 
 // Build a sized Unsplash URL.
-export const img = (id, w = 1600, q = 80) =>
+export const img = (id, w = 1600, q = 75) =>
   `${BASE}/${id}?w=${w}&q=${q}&auto=format&fit=crop`
+
+// Responsive candidates up to `max` px wide, so phones and laptops download
+// a file sized to the screen instead of the largest one.
+const WIDTHS = [480, 640, 828, 1080, 1280, 1600, 1920]
+export const srcSet = (id, max = 1600, q = 75) =>
+  [...WIDTHS.filter((w) => w < max), max].map((w) => `${img(id, w, q)} ${w}w`).join(', ')
+
+// Spread onto an <img>: {...pic(id, max)} → src + srcSet (sizes defaults to 100vw).
+export const pic = (id, max = 1600, q = 75) => ({ src: img(id, max, q), srcSet: srcSet(id, max, q) })
 
 // Single-use page imagery.
 export const media = {

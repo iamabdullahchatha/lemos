@@ -8,7 +8,7 @@ import TiltCard from '@/components/ui/TiltCard'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { ArrowIcon, CheckIcon } from '@/components/layout/NavIcons'
 import { services } from '@/data/services'
-import { img, serviceCardImages } from '@/data/media'
+import { pic, serviceCardImages } from '@/data/media'
 import { EASE, lineChild, lineParent, viewportOnce } from '@/lib/motion'
 
 // Cards fold up out of the page as the grid enters
@@ -39,7 +39,9 @@ function ServiceCard({ service, i }) {
           <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.75rem] bg-navy-900 shadow-[0_40px_70px_-35px_rgba(0,0,0,0.9)]">
             {!failed && (
               <img
-                src={img(serviceCardImages[service.slug], 900)}
+                {...pic(serviceCardImages[service.slug], 900)}
+                decoding="async"
+                sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                 alt=""
                 loading="lazy"
                 onError={() => setFailed(true)}

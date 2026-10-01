@@ -6,7 +6,7 @@ import Eyebrow from '@/components/ui/Eyebrow'
 import Reveal from '@/components/ui/Reveal'
 import ParallaxImage from '@/components/ui/ParallaxImage'
 import AnimatedLine from '@/components/ui/AnimatedLine'
-import { img, media } from '@/data/media'
+import { pic, media } from '@/data/media'
 
 export default function AboutIntro() {
   return (
@@ -20,7 +20,8 @@ export default function AboutIntro() {
                 <div className="relative [transform-style:preserve-3d]">
                   <div className="overflow-hidden rounded-[1.75rem] shadow-[0_50px_90px_-40px_rgba(8,15,46,0.55)]">
                     <ParallaxImage
-                      src={img(media.homeAbout, 1200)}
+                      {...pic(media.homeAbout, 1200)}
+                      sizes="(min-width: 1024px) 40vw, 100vw"
                       alt="Engineers reviewing plans on an industrial site"
                       ratio="3/4"
                       speed={70}

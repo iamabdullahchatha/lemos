@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import Container from '@/components/ui/Container'
 import Reveal from '@/components/ui/Reveal'
 import { qualityPillars } from '@/data/capabilities'
-import { img, media } from '@/data/media'
+import { pic, media } from '@/data/media'
 import { EASE, lineChild, lineParent, viewportOnce } from '@/lib/motion'
 
 const icons = {
@@ -115,7 +115,8 @@ export default function PillarsFlip() {
     <section ref={ref} className="relative overflow-hidden bg-navy-950 py-24 text-paper lg:py-36">
       <motion.div style={{ y: imgY }} className="absolute inset-0 -top-[10%] h-[120%]">
         <img
-          src={img(media.pillars, 2200)}
+          {...pic(media.pillars, 2200)}
+          decoding="async"
           alt=""
           aria-hidden="true"
           loading="lazy"

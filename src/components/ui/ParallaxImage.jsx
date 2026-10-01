@@ -7,6 +7,8 @@ import { useParallax } from '@/lib/useParallax'
 // Falls back to a branded placeholder if the image fails to load.
 export default function ParallaxImage({
   src,
+  srcSet,
+  sizes = '100vw',
   alt = '',
   ratio = '16/9',
   speed = 70,
@@ -29,8 +31,11 @@ export default function ParallaxImage({
         {showImg ? (
           <img
             src={src}
+            srcSet={srcSet}
+            sizes={srcSet ? sizes : undefined}
             alt={alt}
             loading="lazy"
+            decoding="async"
             onError={() => setFailed(true)}
             className={`h-full w-full object-cover ${imgClassName}`}
           />
