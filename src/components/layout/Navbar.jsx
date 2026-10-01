@@ -8,7 +8,8 @@ import useMagnetic from '@/hooks/useMagnetic'
 import ServicesMegaMenu from './ServicesMegaMenu'
 import IndustriesMenu from './IndustriesMenu'
 import MobileNav from './MobileNav'
-import { ArrowIcon, ClockIcon, PhoneIcon, PinIcon } from './NavIcons'
+import Button3D from '@/components/ui/Button3D'
+import { ClockIcon, PhoneIcon, PinIcon } from './NavIcons'
 
 function isActiveItem(item, pathname) {
   if (item.to === '/') return pathname === '/'
@@ -319,10 +320,10 @@ export default function Navbar() {
               }`}
             >
               <span
-                className={`flex h-10 w-10 items-center justify-center rounded-full ring-1 transition-all duration-300 ${
+                className={`flex h-10 w-10 items-center justify-center rounded-full ring-1 transition-all duration-300 ease-editorial group-hover:-translate-y-0.5 group-hover:rotate-[-8deg] group-active:translate-y-0 ${
                   onDark
-                    ? 'ring-white/25 group-hover:bg-white group-hover:text-ink'
-                    : 'ring-ink/15 group-hover:bg-ink group-hover:text-white'
+                    ? 'ring-white/25 shadow-[0_3px_0_rgba(255,255,255,0.14)] group-hover:bg-white group-hover:text-ink group-hover:shadow-[0_5px_0_rgba(255,255,255,0.3),0_14px_24px_-10px_rgba(0,0,0,0.6)]'
+                    : 'ring-ink/15 shadow-[0_3px_0_rgba(16,19,26,0.12)] group-hover:bg-ink group-hover:text-white group-hover:shadow-[0_5px_0_#000,0_14px_24px_-10px_rgba(16,19,26,0.5)]'
                 }`}
               >
                 <PhoneIcon className="h-4 w-4" />
@@ -336,24 +337,9 @@ export default function Navbar() {
             </a>
 
             <motion.div ref={cta.ref} style={{ x: cta.x, y: cta.y }} {...cta.handlers}>
-              <Link
-                to={quoteCta.to}
-                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full py-1.5 pl-5 pr-1.5 font-mono text-[0.68rem] font-medium uppercase tracking-[0.12em] text-white will-change-transform xl:pl-6"
-                style={{
-                  background: 'var(--brand-gradient)',
-                  boxShadow:
-                    '0 14px 30px -12px rgba(242,101,34,0.7), inset 0 1px 0 rgba(255,255,255,0.3)',
-                }}
-              >
-                <span className="relative z-10">{quoteCta.label}</span>
-                <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 ring-1 ring-inset ring-white/35 transition-all duration-500 ease-editorial group-hover:-rotate-45 group-hover:bg-white group-hover:text-ember">
-                  <ArrowIcon className="h-3.5 w-3.5" />
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-editorial group-hover:translate-x-[120%]"
-                />
-              </Link>
+              <Button3D to={quoteCta.to} variant="primary" size="md" className="-mt-1">
+                {quoteCta.label}
+              </Button3D>
             </motion.div>
           </div>
 

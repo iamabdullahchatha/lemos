@@ -112,6 +112,66 @@
   .link-underline:hover {
     background-size: 100% 1px;
   }
+
+  /* ---- 3D extruded button (see Button3D.jsx) ------------------
+     The face sits on a solid "edge" shadow. Hover lifts the face while the
+     edge grows, so the base stays put; active presses it into the base. */
+  .btn3d-face {
+    --lift: 0px;
+    transform: translateY(calc(var(--lift) * -1));
+    transform-style: preserve-3d;
+    box-shadow:
+      0 calc(5px + var(--lift)) 0 0 var(--b3d-edge),
+      0 calc(16px + var(--lift) * 3) 32px -14px var(--b3d-glow);
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) {
+    .btn3d:hover .btn3d-face {
+      --lift: 3px;
+    }
+  }
+  .btn3d:active .btn3d-face {
+    transform: translateY(4px);
+    box-shadow:
+      0 1px 0 0 var(--b3d-edge),
+      0 4px 10px -4px var(--b3d-glow);
+    transition-duration: 0.08s;
+  }
+  .btn3d:focus-visible .btn3d-face {
+    outline: 2px solid #ffa430;
+    outline-offset: 4px;
+  }
+
+  /* Masked blueprint grid for dark surfaces */
+  .grid-lines {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  .grid-lines-ink {
+    background-image:
+      linear-gradient(rgba(16, 19, 26, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16, 19, 26, 0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* Outline display type */
+  .text-outline {
+    -webkit-text-stroke: 1px currentColor;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* 3D helpers */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Reveal primitive — initial hidden state before JS hydrates motion */

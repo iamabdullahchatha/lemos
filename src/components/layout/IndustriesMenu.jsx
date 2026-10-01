@@ -4,12 +4,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { industries, industryDetail } from '@/data/industries'
 import { services, getService } from '@/data/services'
-import { industryImages, img } from '@/data/media'
+import { industryMenuImages, img } from '@/data/media'
 import { EASE } from '@/lib/motion'
 import MegaMenuShell, { MegaFooter, MegaIntro, listVariants, rowVariants } from './MegaMenuShell'
 import { ArrowIcon } from './NavIcons'
 
-const preview = (slug) => img(industryImages[slug], 1000)
+const preview = (slug) => img(industryMenuImages[slug], 1000)
 
 export default function IndustriesMenu({ onNavigate }) {
   const [active, setActive] = useState(industries[0])

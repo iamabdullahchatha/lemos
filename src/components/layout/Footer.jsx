@@ -1,23 +1,58 @@
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import Container from '@/components/ui/Container'
+import Button3D from '@/components/ui/Button3D'
+import TiltCard from '@/components/ui/TiltCard'
 import FooterVisual from './FooterVisual'
+import { ClockIcon, PhoneIcon, PinIcon } from './NavIcons'
 import { site } from '@/data/site'
 import { footerNav } from '@/data/navigation'
 import { services } from '@/data/services'
 import { industries } from '@/data/industries'
+import { EASE, viewportOnce } from '@/lib/motion'
+import { scrollToTop } from '@/lib/useSmoothScroll'
 
-function ContactRow({ label, value, href }) {
+const WORDMARK = 'LEMOS'
+
+function ColumnHeading({ children }) {
   return (
-    <li className="flex flex-col gap-1">
-      <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-paper/40">
-        {label}
+    <h3 className="flex items-center gap-2.5 font-mono text-[0.66rem] font-medium uppercase tracking-[0.24em] text-amber">
+      <span className="h-1.5 w-1.5 rounded-full bg-ember shadow-[0_0_12px_rgba(242,101,34,0.9)]" />
+      {children}
+    </h3>
+  )
+}
+
+function FooterLink({ to, children }) {
+  return (
+    <Link
+      to={to}
+      className="group inline-flex items-center gap-2 text-[0.95rem] text-paper/65 transition-colors duration-300 hover:text-white"
+    >
+      <span className="h-px w-0 bg-ember transition-all duration-400 ease-editorial group-hover:w-4" />
+      <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-0.5">{children}</span>
+    </Link>
+  )
+}
+
+function ContactItem({ icon: Icon, label, children, href }) {
+  const body = (
+    <>
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/[0.06] text-amber ring-1 ring-inset ring-white/10 shadow-[0_3px_0_rgba(255,255,255,0.06)] transition-all duration-400 ease-editorial group-hover:-translate-y-0.5 group-hover:rotate-[-6deg] group-hover:bg-ember group-hover:text-white group-hover:shadow-[0_5px_0_#b73a10,0_16px_28px_-12px_rgba(242,101,34,0.8)]">
+        <Icon className="h-[1.1rem] w-[1.1rem]" />
       </span>
+      <span className="flex flex-col gap-1 pt-0.5">
+        <span className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-paper/40">{label}</span>
+        <span className="text-[0.95rem] leading-relaxed text-paper/85 transition-colors group-hover:text-white">{children}</span>
+      </span>
+    </>
+  )
+  return (
+    <li>
       {href ? (
-        <a href={href} className="text-sm text-paper/80 transition-colors hover:text-white link-underline">
-          {value}
-        </a>
+        <a href={href} className="group flex items-start gap-4">{body}</a>
       ) : (
-        <span className="text-sm text-paper/80">{value}</span>
+        <div className="group flex items-start gap-4">{body}</div>
       )}
     </li>
   )
@@ -26,73 +61,112 @@ function ContactRow({ label, value, href }) {
 export default function Footer() {
   const year = new Date().getFullYear()
   const { contact } = site
-  const hasContact = contact.email || contact.phone || contact.address
+  const tel = contact.phone ? `tel:${contact.phoneHref || contact.phone.replace(/\s+/g, '')}` : null
 
   return (
-    <footer className="relative overflow-hidden bg-navy-900 text-paper">
-      <FooterVisual />
-
-      {/* CTA band */}
-      <div className="relative border-b border-white/12">
-        <Container className="flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-center lg:py-20">
-          <h2 className="max-w-2xl text-display-md font-bold uppercase leading-[0.98] text-white">
-            Let's engineer your next project.
-          </h2>
-          <Link
-            to="/contact"
-            className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-mono text-sm uppercase tracking-[0.16em] text-white transition-colors duration-400 hover:bg-ember-600"
-          >
-            Request a Quote
-            <span aria-hidden="true" className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-          </Link>
-        </Container>
+    <footer className="relative overflow-hidden bg-navy-950 text-paper">
+      {/* Atmosphere: ember hairline, brand glows, masked grid, pipe routing */}
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ember to-transparent opacity-70" />
+      <span aria-hidden="true" className="pointer-events-none absolute -left-40 top-24 h-[28rem] w-[28rem] rounded-full bg-ember/15 blur-[120px]" />
+      <span aria-hidden="true" className="pointer-events-none absolute -right-32 bottom-0 h-[32rem] w-[32rem] rounded-full bg-navy-600/30 blur-[140px]" />
+      <span
+        aria-hidden="true"
+        className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]"
+      />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%] opacity-70">
+        <FooterVisual />
       </div>
 
-      <Container className="relative py-16 lg:py-24">
-        <div className="grid gap-12 lg:grid-cols-12">
+      <Container className="relative pt-20 lg:pt-28">
+        {/* CTA card */}
+        <motion.div
+          initial={{ opacity: 0, y: 40, rotateX: 12 }}
+          whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 1, ease: EASE }}
+          style={{ transformPerspective: 1200 }}
+        >
+          <TiltCard max={4} cardClassName="rounded-[2rem]">
+            <div className="relative rounded-[2rem] bg-gradient-to-br from-navy-800 via-navy-900 to-navy-950 p-8 ring-1 ring-inset ring-white/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)] sm:p-12 lg:p-16">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
+                <span className="absolute -right-20 -top-28 h-80 w-80 rounded-full bg-ember/30 blur-[90px]" />
+                <span className="grid-lines absolute inset-0 opacity-60 [mask-image:linear-gradient(to_left,black,transparent_70%)]" />
+              </span>
+
+              <div className="relative grid items-end gap-10 lg:grid-cols-12 [transform-style:preserve-3d]">
+                <div className="lg:col-span-7 [transform:translateZ(40px)]">
+                  <span className="eyebrow !text-amber flex items-center gap-3">
+                    <span className="h-px w-8 bg-amber/60" /> Start a project
+                  </span>
+                  <h2 className="mt-6 text-display-md font-bold uppercase leading-[0.96] text-white">
+                    Let&apos;s engineer your <span className="text-ember-gradient">next project.</span>
+                  </h2>
+                  <p className="mt-5 max-w-lg text-base leading-relaxed text-paper/70">
+                    Share your scope, drawings or shutdown window. Our engineers will come back with a clear plan and a firm quote.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-4 lg:col-span-5 lg:justify-end [transform:translateZ(60px)]">
+                  <Button3D to="/contact" variant="primary" size="lg">Request a Quote</Button3D>
+                  {tel && (
+                    <Button3D href={tel} variant="glass" size="lg" icon={<PhoneIcon className="h-4 w-4" />}>
+                      {contact.phone}
+                    </Button3D>
+                  )}
+                </div>
+              </div>
+            </div>
+          </TiltCard>
+        </motion.div>
+
+        {/* Columns */}
+        <div className="mt-20 grid gap-14 sm:grid-cols-2 lg:mt-24 lg:grid-cols-12 lg:gap-10">
           {/* Brand */}
-          <div className="lg:col-span-4">
-            <img src={site.logo} alt={site.name} width="782" height="215" className="h-10 w-auto brightness-0 invert" />
-            <p className="mt-6 max-w-xs text-sm leading-relaxed text-paper/65">
-              {site.descriptor}
-            </p>
+          <div className="sm:col-span-2 lg:col-span-4">
+            <Link to="/" aria-label={`${site.name} home`} className="inline-block transition-transform duration-500 ease-editorial hover:-translate-y-0.5">
+              <img src={site.logo} alt={site.name} width="782" height="215" className="logo-on-dark h-14 w-auto sm:h-16" />
+            </Link>
+            <p className="mt-7 max-w-sm text-[0.95rem] leading-relaxed text-paper/65">{site.descriptor}</p>
+            <ul className="mt-8 flex flex-wrap gap-2.5">
+              {[`${services.length} core services`, `${industries.length} sectors`, 'End-to-end delivery'].map((t) => (
+                <li
+                  key={t}
+                  className="rounded-full bg-white/[0.05] px-3.5 py-1.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-paper/70 ring-1 ring-inset ring-white/10"
+                >
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Services */}
           <nav className="lg:col-span-3" aria-label="Services">
-            <h3 className="eyebrow text-amber">Services</h3>
-            <ul className="mt-6 space-y-2.5">
+            <ColumnHeading>Services</ColumnHeading>
+            <ul className="mt-7 space-y-3">
               {services.map((s) => (
                 <li key={s.slug}>
-                  <Link to={`/services/${s.slug}`} className="text-sm text-paper/70 transition-colors hover:text-white link-underline">
-                    {s.title}
-                  </Link>
+                  <FooterLink to={`/services/${s.slug}`}>{s.title}</FooterLink>
                 </li>
               ))}
             </ul>
           </nav>
 
-          {/* Industries + Company */}
-          <nav className="lg:col-span-2" aria-label="Industries">
-            <h3 className="eyebrow text-amber">Industries</h3>
-            <ul className="mt-6 space-y-2.5">
+          {/* Industries + company */}
+          <nav className="lg:col-span-2" aria-label="Industries and company">
+            <ColumnHeading>Industries</ColumnHeading>
+            <ul className="mt-7 space-y-3">
               {industries.map((ind) => (
                 <li key={ind.slug}>
-                  <Link to="/industries" className="text-sm text-paper/70 transition-colors hover:text-white link-underline">
-                    {ind.title}
-                  </Link>
+                  <FooterLink to="/industries">{ind.title}</FooterLink>
                 </li>
               ))}
             </ul>
             {footerNav.map((col) => (
-              <div key={col.heading} className="mt-8">
-                <h3 className="eyebrow text-amber">{col.heading}</h3>
-                <ul className="mt-6 space-y-2.5">
+              <div key={col.heading} className="mt-10">
+                <ColumnHeading>{col.heading}</ColumnHeading>
+                <ul className="mt-7 space-y-3">
                   {col.links.map((l) => (
                     <li key={l.to}>
-                      <Link to={l.to} className="text-sm text-paper/70 transition-colors hover:text-white link-underline">
-                        {l.label}
-                      </Link>
+                      <FooterLink to={l.to}>{l.label}</FooterLink>
                     </li>
                   ))}
                 </ul>
@@ -100,55 +174,79 @@ export default function Footer() {
             ))}
           </nav>
 
-          {/* Contact / office */}
-          <div className="lg:col-span-3">
-            <h3 className="eyebrow text-amber">Contact</h3>
-            {hasContact ? (
-              <ul className="mt-6 space-y-5">
-                {contact.email && <ContactRow label="Email" value={contact.email} href={`mailto:${contact.email}`} />}
-                {contact.phone && <ContactRow label="Phone" value={contact.phone} href={`tel:${contact.phoneHref || contact.phone.replace(/\s+/g, '')}`} />}
-                {contact.addressLines?.length ? (
-                  <li className="flex flex-col gap-1">
-                    <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-paper/40">Office</span>
-                    <span className="text-sm leading-relaxed text-paper/80">
-                      {contact.addressLines.map((l) => (
-                        <span key={l} className="block">{l}</span>
-                      ))}
+          {/* Contact */}
+          <div className="sm:col-span-2 lg:col-span-3">
+            <ColumnHeading>Contact</ColumnHeading>
+            <ul className="mt-7 space-y-6">
+              {contact.phone && (
+                <ContactItem icon={PhoneIcon} label="Phone" href={tel}>
+                  {contact.phone}
+                </ContactItem>
+              )}
+              {contact.addressLines?.length ? (
+                <ContactItem icon={PinIcon} label="Office">
+                  {contact.addressLines.map((l) => (
+                    <span key={l} className="block">{l}</span>
+                  ))}
+                </ContactItem>
+              ) : null}
+              {site.hours?.length ? (
+                <ContactItem icon={ClockIcon} label="Hours">
+                  {site.hours.map((h) => (
+                    <span key={h.days} className="block">
+                      {h.days}: {h.time}
                     </span>
-                  </li>
-                ) : (
-                  contact.address && <ContactRow label="Office" value={contact.address} />
-                )}
-                {site.hours?.length ? (
-                  <li className="flex flex-col gap-1">
-                    <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-paper/40">Hours</span>
-                    <span className="text-sm leading-relaxed text-paper/80">
-                      {site.hours.map((h) => (
-                        <span key={h.days} className="block">{h.days}: {h.time}</span>
-                      ))}
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            ) : (
-              <div className="mt-6">
-                <p className="text-sm leading-relaxed text-paper/65">
-                  Contact and office details available on request.
-                </p>
-                <Link to="/contact" className="mt-4 inline-flex items-center gap-2 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-white transition-colors hover:text-amber">
-                  Get in touch <span aria-hidden="true">→</span>
-                </Link>
-              </div>
-            )}
+                  ))}
+                </ContactItem>
+              ) : null}
+            </ul>
           </div>
         </div>
-
-        {/* Baseline */}
-        <div className="mt-20 flex flex-col gap-4 border-t border-white/12 pt-8 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} {site.name}. All rights reserved.</p>
-          <p className="font-mono uppercase tracking-[0.18em]">{site.tagline}</p>
-        </div>
       </Container>
+
+      {/* Giant wordmark: letters lift in 3D on hover */}
+      <div aria-hidden="true" className="relative mt-16 select-none overflow-hidden lg:mt-20">
+        <Container>
+          <div className="flex justify-between [perspective:900px]">
+            {WORDMARK.split('').map((ch, i) => (
+              <motion.span
+                key={i}
+                initial={{ opacity: 0, y: '40%', rotateX: -70 }}
+                whileInView={{ opacity: 1, y: '0%', rotateX: 0 }}
+                viewport={{ once: true, margin: '0px 0px -5% 0px' }}
+                transition={{ duration: 1.1, ease: EASE, delay: i * 0.08 }}
+                className="text-outline inline-block origin-bottom font-display text-[25vw] font-bold leading-[0.78] text-white/[0.12] transition-[color,transform] duration-500 ease-editorial hover:-translate-y-3 hover:text-ember/60 lg:text-[21vw] 2xl:text-[19rem]"
+              >
+                {ch}
+              </motion.span>
+            ))}
+          </div>
+        </Container>
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-navy-950 to-transparent" />
+      </div>
+
+      {/* Baseline */}
+      <div className="relative border-t border-white/10">
+        <Container className="flex flex-col gap-5 py-7 text-xs text-paper/50 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {site.name}. All rights reserved.
+          </p>
+          <p className="font-mono uppercase tracking-[0.18em]">{site.tagline}</p>
+          <Button3D
+            variant="glass"
+            size="sm"
+            onClick={scrollToTop}
+            icon={
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3 rotate-45">
+                <path d="M12 19V5M6 11l6-6 6 6" />
+              </svg>
+            }
+            className="self-start sm:self-auto"
+          >
+            Back to top
+          </Button3D>
+        </Container>
+      </div>
     </footer>
   )
 }

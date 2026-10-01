@@ -1,7 +1,7 @@
 import { useRef } from 'react'
-import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import Container from '@/components/ui/Container'
+import Button3D from '@/components/ui/Button3D'
 import { lineParent, lineChild, viewportOnce, EASE } from '@/lib/motion'
 import { img, media } from '@/data/media'
 
@@ -78,20 +78,8 @@ export default function FinalCta() {
           transition={{ duration: 0.7, ease: EASE, delay: 0.2 }}
           className="mt-11 flex flex-wrap justify-center gap-4"
         >
-          <Link
-            to="/contact"
-            className="group inline-flex items-center gap-3 bg-ember px-9 py-4 font-mono text-[0.78rem] uppercase tracking-[0.16em] text-white transition-colors duration-400 hover:bg-ember-600"
-          >
-            Request a Quote
-            <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-          </Link>
-          <Link
-            to="/services"
-            className="group inline-flex items-center gap-3 border border-white/30 px-9 py-4 font-mono text-[0.78rem] uppercase tracking-[0.16em] text-white transition-colors duration-400 hover:border-white hover:bg-white/5"
-          >
-            Explore Our Services
-            <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-          </Link>
+          <Button3D to="/contact" variant="primary" size="lg">Request a Quote</Button3D>
+          <Button3D to="/services" variant="glass" size="lg">Explore Our Services</Button3D>
         </motion.div>
       </Container>
     </section>

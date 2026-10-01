@@ -11,7 +11,7 @@ import ServiceIcon from '@/components/icons/ServiceIcon'
 import TechnicalVisual from '@/components/service/TechnicalVisual'
 import { services, getService } from '@/data/services'
 import { getServiceContent } from '@/data/serviceContent'
-import { serviceHeroes, serviceSecondary, img } from '@/data/media'
+import { media, serviceHeroes, serviceSecondary, img } from '@/data/media'
 import { industries } from '@/data/industries'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 import NotFound from './NotFound'
@@ -524,7 +524,7 @@ function ServiceCta({ next }) {
     <section ref={ref} className="relative flex min-h-[70vh] items-center overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ y: imgY }} className="absolute inset-0 -top-[8%] h-[116%]">
         <img
-          src={img(serviceHeroes['shutdowns-turnarounds'], 2000)}
+          src={img(media.serviceCta, 2000)}
           alt=""
           aria-hidden="true"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
@@ -567,7 +567,7 @@ function ServiceCta({ next }) {
           className="mt-11 flex flex-wrap justify-center gap-4"
         >
           <PremiumButton to="/contact" variant="ember">Request a Quote</PremiumButton>
-          <PremiumButton to="/services" variant="outline" arrow={false} className="!border-white/30 !text-white hover:!border-white">
+          <PremiumButton to="/services" variant="glass" arrow={false}>
             All services
           </PremiumButton>
         </motion.div>

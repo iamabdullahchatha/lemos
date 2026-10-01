@@ -1,32 +1,35 @@
 import Hero from '@/components/home/Hero'
 import Statement from '@/components/home/Statement'
-import CapabilitiesShowcase from '@/components/home/CapabilitiesShowcase'
-import IndustrialExperience from '@/components/home/IndustrialExperience'
+import ServicesCards from '@/components/home/ServicesCards'
 import AboutIntro from '@/components/home/AboutIntro'
 import ProcessJourney from '@/components/home/ProcessJourney'
-import IndustriesShowcase from '@/components/home/IndustriesShowcase'
+import IndustriesBento from '@/components/home/IndustriesBento'
+import PillarsFlip from '@/components/home/PillarsFlip'
 import TechnicalCapabilities from '@/components/home/TechnicalCapabilities'
+import GalleryRing from '@/components/home/GalleryRing'
 import FinalCta from '@/components/home/FinalCta'
 
 export default function Home() {
   return (
     <>
-      {/* 1 — Cinematic hero */}
+      {/* 1 — Cinematic hero + floating stat cards */}
       <Hero />
       {/* 2 — Engineering / Fabrication / Execution */}
       <Statement />
-      {/* 3 — Interactive capabilities (8 services) */}
-      <CapabilitiesShowcase />
-      {/* 4 — 3D industrial experience (WebGL + fallback) */}
-      <IndustrialExperience />
-      {/* 5 — About, editorial */}
+      {/* 3 — Services as 3D cards */}
+      <ServicesCards />
+      {/* 4 — About, editorial */}
       <AboutIntro />
-      {/* 6 — Process horizontal journey */}
+      {/* 5 — Process horizontal journey */}
       <ProcessJourney />
-      {/* 7 — Industries, immersive */}
-      <IndustriesShowcase />
-      {/* 8 + 9 — Technical capabilities & quality pillars */}
+      {/* 6 — Industries bento */}
+      <IndustriesBento />
+      {/* 7 — Quality pillars, 3D flip cards */}
+      <PillarsFlip />
+      {/* 8 — Equipment & systems */}
       <TechnicalCapabilities />
+      {/* 9 — 3D field gallery ring */}
+      <GalleryRing />
       {/* 10 — Final CTA */}
       <FinalCta />
     </>

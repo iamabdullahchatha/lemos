@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom'
 import Container from '@/components/ui/Container'
+import Button3D from '@/components/ui/Button3D'
+import TiltCard from '@/components/ui/TiltCard'
+import ServiceIcon from '@/components/icons/ServiceIcon'
 import Eyebrow from '@/components/ui/Eyebrow'
 import Reveal from '@/components/ui/Reveal'
 import ParallaxImage from '@/components/ui/ParallaxImage'
@@ -14,23 +16,33 @@ export default function AboutIntro() {
           {/* Image column (offset, editorial) */}
           <div className="lg:col-span-5">
             <Reveal>
-              <div className="relative lg:-mt-8">
-                <ParallaxImage
-                  src={img(media.about, 1200)}
-                  alt="Engineer reviewing plans on an industrial site"
-                  ratio="3/4"
-                  speed={70}
-                  className="w-full"
-                />
-                <div className="absolute -right-4 -top-4 hidden border border-line bg-paper px-5 py-4 lg:block">
-                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.22em] text-ink-mute">
-                    Est. capability
-                  </span>
-                  <p className="mt-1 font-display text-2xl font-bold text-ink">
-                    End to end
-                  </p>
+              <TiltCard max={7} cardClassName="rounded-[1.75rem]" className="lg:-mt-8">
+                <div className="relative [transform-style:preserve-3d]">
+                  <div className="overflow-hidden rounded-[1.75rem] shadow-[0_50px_90px_-40px_rgba(8,15,46,0.55)]">
+                    <ParallaxImage
+                      src={img(media.homeAbout, 1200)}
+                      alt="Engineers reviewing plans on an industrial site"
+                      ratio="3/4"
+                      speed={70}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="absolute -right-3 -top-5 rounded-2xl bg-white px-5 py-4 ring-1 ring-line shadow-[0_6px_0_#d9d4c8,0_30px_50px_-20px_rgba(8,15,46,0.45)] [transform:translateZ(70px)] sm:-right-5">
+                    <span className="font-mono text-[0.58rem] uppercase tracking-[0.22em] text-ink-mute">Capability</span>
+                    <p className="mt-1 font-display text-2xl font-bold text-ink">End to end</p>
+                  </div>
+                  <div className="absolute -bottom-5 left-5 flex items-center gap-3 rounded-2xl bg-navy-950 px-4 py-3 text-white shadow-[0_6px_0_#030719,0_26px_44px_-16px_rgba(8,15,46,0.7)] [transform:translateZ(50px)]">
+                    <span className="grid h-9 w-9 place-items-center rounded-xl text-white [background:var(--brand-gradient)]">
+                      <ServiceIcon name="oilgas" className="h-5 w-5" />
+                    </span>
+                    <span className="font-mono text-[0.6rem] uppercase leading-snug tracking-[0.2em] text-paper/80">
+                      Oil &amp; gas
+                      <br />
+                      specialists
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </TiltCard>
             </Reveal>
           </div>
 
@@ -66,16 +78,9 @@ export default function AboutIntro() {
             </div>
 
             <Reveal>
-              <Link
-                to="/about"
-                className="group mt-10 inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.18em] text-ink transition-colors hover:text-ember"
-              >
-                <span className="h-px w-8 bg-ember transition-all duration-400 ease-editorial group-hover:w-12" />
-                More about Lemos
-                <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
+              <div className="mt-10">
+                <Button3D to="/about" variant="dark" size="lg">More about Lemos</Button3D>
+              </div>
             </Reveal>
           </div>
         </div>

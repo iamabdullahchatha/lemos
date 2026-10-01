@@ -8,7 +8,7 @@ import PremiumButton from '@/components/ui/PremiumButton'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { industries, industryDetail as detail } from '@/data/industries'
 import { getService } from '@/data/services'
-import { industryImages, img, media } from '@/data/media'
+import { industryBlockImages, industryImages, img, media } from '@/data/media'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 
 function useIsDesktop() {
@@ -46,8 +46,8 @@ function IndustriesHero() {
     <section ref={ref} className="relative flex h-[82svh] min-h-[560px] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale }} className="absolute inset-0">
         <img
-          src={img(media.statement, 2200)}
-          alt="Industrial process facility at scale"
+          src={img(media.industriesHero, 2200)}
+          alt="Refinery storage tanks in evening light"
           onError={(e) => (e.currentTarget.style.opacity = '0')}
           className="h-full w-full object-cover"
         />
@@ -195,7 +195,7 @@ function StackedIndustries() {
         return (
           <div key={ind.slug} className="relative overflow-hidden border-b border-white/10 text-paper">
             <div className="absolute inset-0">
-              <img src={img(industryImages[ind.slug], 1400)} alt="" aria-hidden="true" onError={(e) => (e.currentTarget.style.opacity = '0')} className="h-full w-full object-cover" />
+              <img src={img(industryBlockImages[ind.slug], 1400)} alt="" aria-hidden="true" onError={(e) => (e.currentTarget.style.opacity = '0')} className="h-full w-full object-cover" />
             </div>
             <span className="absolute inset-0 bg-navy-950/82" />
             <Container className="relative z-10 py-16">

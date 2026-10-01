@@ -1,11 +1,23 @@
 import { useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Link } from 'react-router-dom'
 import Container from '@/components/ui/Container'
+import Button3D from '@/components/ui/Button3D'
+import TiltCard from '@/components/ui/TiltCard'
+import ServiceIcon from '@/components/icons/ServiceIcon'
 import { EASE, lineChild } from '@/lib/motion'
 import { img, media } from '@/data/media'
+import { services } from '@/data/services'
+import { industries } from '@/data/industries'
+import { processSteps } from '@/data/process'
 
 const HEADLINE = ['Engineering', 'what industry', 'depends on.']
+
+// Facts derived from the site's own data — no invented metrics.
+const STATS = [
+  { value: String(services.length).padStart(2, '0'), label: 'Core services', note: 'Contracting to skids', icon: 'mechanical-contracting' },
+  { value: String(industries.length).padStart(2, '0'), label: 'Industry sectors', note: 'Upstream to power', icon: 'oilgas' },
+  { value: String(processSteps.length).padStart(2, '0'), label: 'Delivery stages', note: 'Plan → maintain', icon: 'industrial' },
+]
 
 // Orchestrated load sequence
 const container = {
@@ -74,8 +86,8 @@ export default function Hero() {
         style={{ y: copyY, opacity: fade }}
         className="relative z-10 flex h-full items-end pb-20 sm:pb-24"
       >
-        <Container>
-          <motion.div variants={container} initial="hidden" animate="show">
+        <Container className="grid items-end gap-12 lg:grid-cols-12">
+          <motion.div variants={container} initial="hidden" animate="show" className="lg:col-span-8">
             <motion.div variants={rise} className="eyebrow !text-amber">
               <span className="h-px w-8 bg-amber/70" /> International Oil &amp; Gas Engineering
             </motion.div>
@@ -102,22 +114,45 @@ export default function Hero() {
             </motion.p>
 
             <motion.div variants={rise} className="mt-10 flex flex-wrap gap-4">
-              <Link
-                to="/services"
-                className="group inline-flex items-center gap-3 bg-ember px-8 py-4 font-mono text-[0.78rem] uppercase tracking-[0.16em] text-white transition-colors duration-400 hover:bg-ember-600"
-              >
-                Explore Our Services
-                <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-              </Link>
-              <Link
-                to="/contact"
-                className="group inline-flex items-center gap-3 border border-white/30 px-8 py-4 font-mono text-[0.78rem] uppercase tracking-[0.16em] text-white transition-colors duration-400 hover:border-white hover:bg-white/5"
-              >
-                Request a Quote
-                <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-              </Link>
+              <Button3D to="/services" variant="primary" size="lg">Explore Our Services</Button3D>
+              <Button3D to="/contact" variant="glass" size="lg">Request a Quote</Button3D>
             </motion.div>
           </motion.div>
+
+          {/* Floating glass stat cards */}
+          <div className="hidden flex-col items-end gap-4 lg:col-span-4 lg:flex">
+            {STATS.map((s, i) => (
+              <motion.div
+                key={s.label}
+                initial={{ opacity: 0, x: 60, rotateY: -35 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                transition={{ duration: 1.1, ease: EASE, delay: 0.9 + i * 0.15 }}
+                style={{ transformPerspective: 1000 }}
+                className={i === 1 ? 'mr-10' : ''}
+              >
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 5 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.6 }}
+                >
+                  <TiltCard max={16} cardClassName="rounded-2xl">
+                    <div className="relative flex w-72 items-center gap-4 rounded-2xl p-4 pr-6 shadow-[0_30px_60px_-25px_rgba(0,0,0,0.7)] [transform-style:preserve-3d]">
+                      <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-white/[0.08] ring-1 ring-inset ring-white/20 backdrop-blur-xl" />
+                      <span className="relative grid h-12 w-12 shrink-0 place-items-center rounded-xl text-white shadow-[0_4px_0_#b73a10] [background:var(--brand-gradient)] [transform:translateZ(30px)]">
+                        <ServiceIcon name={s.icon} className="h-6 w-6" />
+                      </span>
+                      <span className="relative flex flex-col [transform:translateZ(20px)]">
+                        <span className="flex items-baseline gap-2">
+                          <span className="font-display text-3xl font-bold leading-none text-white">{s.value}</span>
+                          <span className="text-sm font-semibold text-white">{s.label}</span>
+                        </span>
+                        <span className="mt-1.5 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-paper/55">{s.note}</span>
+                      </span>
+                    </div>
+                  </TiltCard>
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
         </Container>
       </motion.div>
 
