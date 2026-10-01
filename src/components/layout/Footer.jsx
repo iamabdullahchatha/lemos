@@ -67,8 +67,16 @@ export default function Footer() {
     <footer className="relative overflow-hidden bg-navy-950 text-paper">
       {/* Atmosphere: ember hairline, brand glows, masked grid, pipe routing */}
       <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ember to-transparent opacity-70" />
-      <span aria-hidden="true" className="pointer-events-none absolute -left-40 top-24 h-[28rem] w-[28rem] rounded-full bg-ember/15 blur-[120px]" />
+      {/* Moving light along the hairline */}
+      <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-8 overflow-hidden">
+        <span className="footer-sweep absolute left-0 top-0 block h-full w-1/4">
+          <span className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber to-transparent" />
+          <span className="absolute inset-x-[15%] -top-3 h-6 rounded-full bg-amber/50 blur-xl" />
+        </span>
+      </span>
+      <span aria-hidden="true" className="footer-drift pointer-events-none absolute -left-40 top-24 h-[28rem] w-[28rem] rounded-full bg-ember/15 blur-[120px]" />
       <span aria-hidden="true" className="pointer-events-none absolute -right-32 bottom-0 h-[32rem] w-[32rem] rounded-full bg-navy-600/30 blur-[140px]" />
+      <span aria-hidden="true" className="footer-drift pointer-events-none absolute bottom-10 left-[10%] h-64 w-64 rounded-full bg-amber/10 blur-[100px] [animation-delay:-7s] [animation-duration:18s]" />
       <span
         aria-hidden="true"
         className="grid-lines pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_20%,transparent_70%)]"
@@ -87,7 +95,10 @@ export default function Footer() {
           style={{ transformPerspective: 1200 }}
         >
           <TiltCard max={4} cardClassName="rounded-[2rem]">
+            {/* Rotating ember glow around the card */}
+            <span aria-hidden="true" className="glow-halo pointer-events-none absolute -inset-1 rounded-[2.2rem]" />
             <div className="relative rounded-[2rem] bg-gradient-to-br from-navy-800 via-navy-900 to-navy-950 p-8 ring-1 ring-inset ring-white/10 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)] sm:p-12 lg:p-16">
+              <span aria-hidden="true" className="glow-border pointer-events-none absolute inset-0 rounded-[2rem]" />
               <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
                 <span className="absolute -right-20 -top-28 h-80 w-80 rounded-full bg-ember/30 blur-[90px]" />
                 <span className="grid-lines absolute inset-0 opacity-60 [mask-image:linear-gradient(to_left,black,transparent_70%)]" />
@@ -156,7 +167,7 @@ export default function Footer() {
             <ul className="mt-7 space-y-3">
               {industries.map((ind) => (
                 <li key={ind.slug}>
-                  <FooterLink to="/industries">{ind.title}</FooterLink>
+                  <FooterLink to={`/industries/${ind.slug}`}>{ind.title}</FooterLink>
                 </li>
               ))}
             </ul>

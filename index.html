@@ -10,22 +10,35 @@
       content="Lemos International — international oil & gas mechanical contracting, pipe fabrication, structural fabrication, and turnaround engineering delivered to the highest industrial standards."
     />
 
-    <!-- Open Graph / social share (relative paths; prepend your domain once known) -->
+    <!--
+      Open Graph / social share (WhatsApp, LinkedIn, Facebook, X).
+      %SITE_URL% is replaced at build time by the siteUrl plugin in vite.config.js —
+      crawlers such as WhatsApp require absolute https:// image URLs.
+    -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Lemos International" />
-    <meta property="og:title" content="Lemos International — Oil & Gas Engineering & Contracting" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:title" content="Lemos International — Oil &amp; Gas Engineering &amp; Contracting" />
     <meta
       property="og:description"
-      content="International mechanical contracting and fabrication — pipe, structural, tanks & vessels, turnarounds and equipment installation delivered to the highest industrial standards."
+      content="International mechanical contracting and fabrication — pipe, structural, tanks &amp; vessels, turnarounds and equipment installation delivered to the highest industrial standards."
     />
-    <meta property="og:image" content="/brand/lemos-og-image.webp" />
+    <meta property="og:image" content="%SITE_URL%/brand/lemos-og-image.jpg" />
+    <meta property="og:image:secure_url" content="%SITE_URL%/brand/lemos-og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Lemos International engineer overlooking an offshore oil platform at sunset" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Lemos International — Oil & Gas Engineering & Contracting" />
+    <meta name="twitter:title" content="Lemos International — Oil &amp; Gas Engineering &amp; Contracting" />
     <meta
       name="twitter:description"
       content="International mechanical contracting and fabrication delivered to the highest industrial standards."
     />
-    <meta name="twitter:image" content="/brand/lemos-og-image.webp" />
+    <meta name="twitter:image" content="%SITE_URL%/brand/lemos-og-image.jpg" />
+    <meta name="twitter:image:alt" content="Lemos International engineer overlooking an offshore oil platform at sunset" />
+    <link rel="image_src" href="%SITE_URL%/brand/lemos-og-image.jpg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

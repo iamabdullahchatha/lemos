@@ -66,7 +66,7 @@ export default function IndustriesMenu({ onNavigate }) {
               return (
                 <motion.li key={ind.slug} variants={rowVariants}>
                   <Link
-                    to="/industries"
+                    to={`/industries/${ind.slug}`}
                     onClick={onNavigate}
                     onMouseEnter={() => setActive(ind)}
                     onFocus={() => setActive(ind)}

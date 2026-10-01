@@ -39,7 +39,7 @@ function IndustryTile({ ind, i }) {
 
   return (
     <motion.li custom={i} variants={tile} style={{ transformPerspective: 1400 }} className={`${feature ? 'min-h-[27rem]' : 'min-h-[21rem]'} lg:min-h-0 ${layout[ind.slug]}`}>
-      <TiltCard as={Link} to="/industries" max={feature ? 6 : 9} className="h-full" cardClassName="rounded-[1.75rem]" aria-label={ind.title}>
+      <TiltCard as={Link} to={`/industries/${ind.slug}`} max={feature ? 6 : 9} className="h-full" cardClassName="rounded-[1.75rem]" aria-label={ind.title}>
         <article className="relative flex h-full flex-col justify-between gap-8 rounded-[1.75rem] p-6 [transform-style:preserve-3d] sm:p-7">
           <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.75rem] bg-navy-900 shadow-[0_40px_70px_-38px_rgba(8,15,46,0.75)]">
             {!failed && (

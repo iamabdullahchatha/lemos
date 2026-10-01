@@ -20,7 +20,8 @@ function isActiveItem(item, pathname) {
 // paper, so the header starts in its dark-text variant there.
 function hasDarkHero(pathname) {
   return (
-    ['/', '/about', '/industries', '/contact'].includes(pathname) ||
+    ['/', '/about', '/services', '/industries', '/contact'].includes(pathname) ||
+    pathname.startsWith('/industries/') ||
     pathname.startsWith('/services/')
   )
 }

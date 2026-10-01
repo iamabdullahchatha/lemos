@@ -7,6 +7,7 @@ import About from '@/pages/About'
 import Services from '@/pages/Services'
 import ServiceDetail from '@/pages/ServiceDetail'
 import Industries from '@/pages/Industries'
+import IndustryDetail from '@/pages/IndustryDetail'
 import Contact from '@/pages/Contact'
 import Styleguide from '@/pages/Styleguide'
 import NotFound from '@/pages/NotFound'
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/services/:slug" element={<ServiceDetail />} />
           <Route path="/industries" element={<Industries />} />
+          <Route path="/industries/:slug" element={<IndustryDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/styleguide" element={<Styleguide />} />
           <Route path="*" element={<NotFound />} />

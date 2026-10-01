@@ -4,19 +4,41 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Container from '@/components/ui/Container'
 import Eyebrow from '@/components/ui/Eyebrow'
 import Reveal from '@/components/ui/Reveal'
-import PremiumButton from '@/components/ui/PremiumButton'
+import Button3D from '@/components/ui/Button3D'
+import TiltCard from '@/components/ui/TiltCard'
+import Photo from '@/components/ui/Photo'
 import TechnicalLabel from '@/components/ui/TechnicalLabel'
-import ParallaxImage from '@/components/ui/ParallaxImage'
 import ServiceIcon from '@/components/icons/ServiceIcon'
-import TechnicalVisual from '@/components/service/TechnicalVisual'
+import { ArrowIcon } from '@/components/layout/NavIcons'
 import { services, getService } from '@/data/services'
 import { getServiceContent } from '@/data/serviceContent'
-import { media, serviceHeroes, serviceSecondary, img } from '@/data/media'
+import { media, serviceHeroes, serviceSecondary, serviceEquipmentImages, img } from '@/data/media'
 import { industries } from '@/data/industries'
 import { EASE, lineParent, lineChild, viewportOnce } from '@/lib/motion'
 import NotFound from './NotFound'
 
-const industryTitle = (slug) => industries.find((i) => i.slug === slug)?.title || slug
+const darkEyebrow = '!text-amber [&>span]:bg-amber/60'
+const pad = (n) => String(n).padStart(2, '0')
+
+function Heading({ lines, accent = 1, dark = false, className = '' }) {
+  return (
+    <motion.h2
+      variants={lineParent}
+      initial="hidden"
+      whileInView="show"
+      viewport={viewportOnce}
+      className={`mt-6 font-bold uppercase leading-[0.96] ${dark ? 'text-white' : 'text-ink'} ${className}`}
+    >
+      {lines.map((l, i) => (
+        <span key={l} className="block overflow-hidden pb-[0.04em]">
+          <motion.span variants={lineChild} className={`block ${i === accent ? 'text-ember-gradient' : ''}`}>
+            {l}
+          </motion.span>
+        </span>
+      ))}
+    </motion.h2>
+  )
+}
 
 export default function ServiceDetail() {
   const { slug } = useParams()
@@ -26,20 +48,17 @@ export default function ServiceDetail() {
 
   const idx = services.findIndex((s) => s.slug === slug)
   const next = services[(idx + 1) % services.length]
-  const onDark = content.accent === 'amber' ? 'text-amber' : 'text-ember'
-  const onDarkBg = content.accent === 'amber' ? 'bg-amber' : 'bg-ember'
 
   return (
     <>
-      <ServiceHero service={service} content={content} accent={onDark} />
+      <ServiceHero key={`hero-${slug}`} service={service} content={content} />
       <ServiceIntro service={service} content={content} idx={idx} />
-      <ServiceCapabilities content={content} />
-      <ServiceApplications service={service} content={content} accent={onDark} accentBg={onDarkBg} />
-      <ServiceEquipment content={content} />
-      <ServiceProcess content={content} accent={onDark} />
+      <ServiceCapabilities service={service} content={content} />
+      <ServiceApplications service={service} content={content} />
+      <ServiceEquipment service={service} content={content} />
+      <ServiceProcess content={content} />
       <ServiceIndustries content={content} />
-      <ServiceVisual service={service} content={content} />
-      <ServiceFaq content={content} />
+      <ServiceFaq key={`faq-${slug}`} content={content} />
       <ServiceRelated content={content} />
       <ServiceCta next={next} />
     </>
@@ -47,16 +66,16 @@ export default function ServiceDetail() {
 }
 
 /* 1 — Cinematic hero */
-function ServiceHero({ service, content, accent }) {
+function ServiceHero({ service, content }) {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const imgScale = useTransform(scrollYProgress, [0, 1], [1, 1.16])
   const imgY = useTransform(scrollYProgress, [0, 1], ['0%', '14%'])
-  const copyY = useTransform(scrollYProgress, [0, 1], ['0%', '-18%'])
+  const copyY = useTransform(scrollYProgress, [0, 1], ['0%', '-16%'])
   const fade = useTransform(scrollYProgress, [0, 0.85], [1, 0])
 
   return (
-    <section ref={ref} className="relative flex h-[92svh] min-h-[600px] w-full items-end overflow-hidden bg-navy-950 text-paper">
+    <section ref={ref} className="relative flex min-h-[100svh] w-full items-end overflow-hidden bg-navy-950 text-paper">
       <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
         <img
           src={img(serviceHeroes[service.slug], 2200)}
@@ -65,54 +84,94 @@ function ServiceHero({ service, content, accent }) {
           className="h-full w-full object-cover"
         />
       </motion.div>
-      <span className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/45 to-navy-950/25" />
-      <span className="absolute inset-0 bg-gradient-to-r from-navy-950/70 via-transparent to-transparent" />
+      <span className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/55 to-navy-950/30" />
+      <span className="absolute inset-0 bg-gradient-to-r from-navy-950/85 via-navy-950/25 to-transparent" />
+      <span aria-hidden="true" className="grid-lines pointer-events-none absolute inset-0 opacity-40 [mask-image:linear-gradient(to_top,black,transparent_70%)]" />
 
-      {/* technical marks */}
-      <motion.div style={{ opacity: fade }} className="pointer-events-none absolute inset-0">
-        <Container className="relative h-full">
-          <div className="absolute left-[var(--edge)] top-[calc(var(--nav-h)+1.5rem)] font-mono text-[0.6rem] uppercase tracking-[0.25em] text-paper/40">
-            Lemos / {service.index}
-          </div>
-          <span className="absolute right-[var(--edge)] top-1/2 hidden h-24 w-px -translate-y-1/2 bg-white/15 sm:block" />
-        </Container>
-      </motion.div>
-
-      <motion.div style={{ y: copyY, opacity: fade }} className="relative z-10 w-full pb-16 sm:pb-20">
+      <motion.div style={{ y: copyY }} className="relative z-10 w-full pb-14 pt-[calc(var(--nav-h)+4rem)] sm:pb-20">
         <Container>
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}>
-            <span className={`eyebrow ${accent === 'text-amber' ? '!text-amber [&>span]:bg-amber/60' : '!text-ember'}`}>
-              <span className="h-px w-8 bg-current opacity-70" /> {content.heroKicker}
-            </span>
-          </motion.div>
-          <motion.h1
-            variants={lineParent}
-            initial="hidden"
-            animate="show"
-            className="mt-6 text-display-xl font-bold uppercase leading-[0.92] text-white"
-          >
-            {content.heroLines.map((line, i) => (
-              <span key={i} className="block overflow-hidden pb-[0.05em]">
-                <motion.span variants={lineChild} className={`block ${i === content.heroLines.length - 1 ? 'text-ember-gradient' : ''}`}>
-                  {line}
-                </motion.span>
-              </span>
-            ))}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
+          <motion.nav
+            aria-label="Breadcrumb"
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: EASE, delay: 0.3 }}
-            className="mt-7 max-w-xl text-lg leading-relaxed text-paper/80"
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-paper/55"
           >
-            {content.tagline}
-          </motion.p>
-        </Container>
-      </motion.div>
+            <Link to="/" className="transition-colors hover:text-white">Home</Link>
+            <span className="text-paper/30">/</span>
+            <Link to="/services" className="transition-colors hover:text-white">Services</Link>
+            <span className="text-paper/30">/</span>
+            <span className="text-amber">{service.title}</span>
+          </motion.nav>
 
-      <motion.div style={{ opacity: fade }} className="absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex">
-        <span className="font-mono text-[0.58rem] uppercase tracking-[0.3em] text-paper/50">Scroll</span>
-        <span className="h-9 w-px bg-gradient-to-b from-paper/60 to-transparent" />
+          <div className="grid items-end gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-8">
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: EASE }}>
+                <span className="inline-flex items-center gap-3 rounded-full bg-white/10 py-1.5 pl-1.5 pr-4 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-paper/85 ring-1 ring-inset ring-white/20 backdrop-blur">
+                  <span className="grid h-7 w-7 place-items-center rounded-full text-white" style={{ background: 'var(--brand-gradient)' }}>
+                    <ServiceIcon name={service.slug} className="h-4 w-4" />
+                  </span>
+                  {content.heroKicker}
+                </span>
+              </motion.div>
+              <motion.h1
+                variants={lineParent}
+                initial="hidden"
+                animate="show"
+                className="mt-7 text-display-lg font-bold uppercase leading-[0.92] text-white"
+              >
+                {content.heroLines.map((line, i) => (
+                  <span key={i} className="block overflow-hidden pb-[0.05em]">
+                    <motion.span variants={lineChild} className={`block ${i === content.heroLines.length - 1 ? 'text-ember-gradient' : ''}`}>
+                      {line}
+                    </motion.span>
+                  </span>
+                ))}
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.45 }}
+                className="mt-7 max-w-xl text-lg leading-relaxed text-paper/75"
+              >
+                {content.tagline}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, ease: EASE, delay: 0.6 }}
+                className="mt-9 flex flex-wrap gap-4"
+              >
+                <Button3D to="/contact" size="lg">Request a quote</Button3D>
+                <Button3D to="/services" variant="glass" size="lg" arrow={false}>
+                  All services
+                </Button3D>
+              </motion.div>
+            </div>
+
+            {/* Floating glass scope cards */}
+            <motion.ul style={{ opacity: fade }} className="grid gap-3 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1 lg:pl-4">
+              {service.scope.map((sc, i) => (
+                <motion.li
+                  key={sc}
+                  initial={{ opacity: 0, x: 60, rotateY: -30 }}
+                  animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                  transition={{ duration: 1.1, ease: EASE, delay: 0.5 + i * 0.1 }}
+                  style={{ transformPerspective: 1000 }}
+                  className={i % 2 ? '' : 'lg:ml-6'}
+                >
+                  <TiltCard max={12} cardClassName="rounded-2xl">
+                    <div className="relative flex items-center gap-4 rounded-2xl p-4 [transform-style:preserve-3d]">
+                      <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-white/[0.08] ring-1 ring-inset ring-white/20 backdrop-blur-md shadow-[0_30px_50px_-30px_rgba(0,0,0,0.8)]" />
+                      <span className="relative font-display text-2xl font-bold text-amber [transform:translateZ(36px)]">{pad(i + 1)}</span>
+                      <span className="relative text-sm font-semibold text-white [transform:translateZ(22px)]">{sc}</span>
+                    </div>
+                  </TiltCard>
+                </motion.li>
+              ))}
+            </motion.ul>
+          </div>
+        </Container>
       </motion.div>
     </section>
   )
@@ -122,17 +181,16 @@ function ServiceHero({ service, content, accent }) {
 function ServiceIntro({ service, content, idx }) {
   const flip = idx % 2 === 1
   return (
-    <section className="bg-paper py-24 lg:py-32">
-      <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+    <section className="relative overflow-hidden bg-paper py-24 lg:py-36">
+      <span aria-hidden="true" className={`grid-lines-ink pointer-events-none absolute inset-0 ${flip ? '[mask-image:radial-gradient(ellipse_at_bottom_left,black_5%,transparent_55%)]' : '[mask-image:radial-gradient(ellipse_at_bottom_right,black_5%,transparent_55%)]'}`} />
+      <Container className="relative">
+        <div className="grid items-center gap-16 lg:grid-cols-12 lg:gap-16">
           <div className={`lg:col-span-6 ${flip ? 'lg:order-2' : ''}`}>
             <Reveal>
               <TechnicalLabel code="INTRO">Overview</TechnicalLabel>
             </Reveal>
             <Reveal>
-              <p className="mt-7 text-display-sm font-semibold leading-[1.2] text-ink">
-                {content.intro.lead}
-              </p>
+              <p className="mt-7 text-display-sm font-semibold leading-[1.2] text-ink">{content.intro.lead}</p>
             </Reveal>
             <div className="mt-8 max-w-xl space-y-5">
               {content.intro.body.map((p, i) => (
@@ -142,23 +200,35 @@ function ServiceIntro({ service, content, idx }) {
               ))}
             </div>
           </div>
+
           <div className={`lg:col-span-6 ${flip ? 'lg:order-1' : ''}`}>
-            <Reveal>
-              <div className="relative">
-                <ParallaxImage
-                  src={img(serviceSecondary[service.slug], 1400)}
-                  alt={`${service.title} — Lemos International`}
-                  ratio="4/5"
-                  speed={60}
-                  className="w-full"
-                />
-                <div className={`absolute -bottom-4 ${flip ? '-right-4' : '-left-4'} hidden bg-ember px-5 py-4 lg:block`}>
-                  <span className="font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white">
-                    {service.index} — {service.title}
-                  </span>
+            <motion.div
+              initial={{ opacity: 0, y: 60, rotateY: flip ? 18 : -18 }}
+              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 1.2, ease: EASE }}
+              style={{ transformPerspective: 1400 }}
+              className="relative mx-auto max-w-lg lg:max-w-none"
+            >
+              <span aria-hidden="true" className={`absolute -bottom-6 ${flip ? '-left-6' : '-right-6'} h-2/3 w-2/3 rounded-[2rem] [background:var(--brand-gradient)] opacity-90`} />
+              <TiltCard max={6} cardClassName="rounded-[2rem]">
+                <div className="relative aspect-[4/5] rounded-[2rem] [transform-style:preserve-3d]">
+                  <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[2rem] bg-navy-900 shadow-[0_50px_80px_-40px_rgba(8,15,46,0.8)]">
+                    <Photo id={serviceSecondary[service.slug]} w={1400} alt="" className="transition-transform duration-[1.4s] ease-editorial group-hover:scale-105" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-navy-950/70 via-transparent to-transparent" />
+                  </div>
+                  <div className={`absolute bottom-6 ${flip ? 'right-6' : 'left-6'} flex items-center gap-4 rounded-2xl bg-white/90 p-3 pr-5 shadow-[0_24px_40px_-20px_rgba(8,15,46,0.7)] backdrop-blur [transform:translateZ(60px)]`}>
+                    <span className="grid h-12 w-12 place-items-center rounded-xl text-white" style={{ background: 'var(--brand-gradient)' }}>
+                      <ServiceIcon name={service.slug} className="h-6 w-6" />
+                    </span>
+                    <span>
+                      <span className="block font-mono text-[0.6rem] uppercase tracking-[0.2em] text-ember">Discipline {service.index}</span>
+                      <span className="block text-sm font-semibold text-ink">{service.title}</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </Reveal>
+              </TiltCard>
+            </motion.div>
           </div>
         </div>
       </Container>
@@ -167,77 +237,98 @@ function ServiceIntro({ service, content, idx }) {
 }
 
 /* 3 — Capabilities */
-function ServiceCapabilities({ content }) {
+function ServiceCapabilities({ service, content }) {
   return (
     <section className="bg-paper-warm py-24 lg:py-32">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
+        <div className="grid items-end gap-8 lg:grid-cols-12">
+          <div className="lg:col-span-7">
             <Reveal>
               <Eyebrow>Capabilities</Eyebrow>
             </Reveal>
+            <Heading lines={['What this service', 'delivers.']} className="text-display-sm" />
+          </div>
+          <div className="lg:col-span-5">
             <Reveal>
-              <h2 className="mt-6 text-display-sm font-bold uppercase leading-[1.0] text-ink">
-                What this service delivers.
-              </h2>
+              <p className="text-lg leading-relaxed text-ink-mute">{service.summary}</p>
             </Reveal>
           </div>
-          <div className="lg:col-span-8">
-            <div className="grid gap-px border border-line bg-line sm:grid-cols-2">
-              {content.capabilities.map((c, i) => (
-                <Reveal key={c.title} delay={(i % 2) * 0.05}>
-                  <div className="group h-full bg-paper p-8 transition-colors duration-400 hover:bg-paper-pure">
-                    <span className="font-mono text-xs text-ember">{String(i + 1).padStart(2, '0')}</span>
-                    <h3 className="mt-4 text-xl font-semibold text-ink">{c.title}</h3>
-                    <p className="mt-3 text-base leading-relaxed text-ink-mute">{c.description}</p>
-                    <span className="mt-5 block h-px w-8 bg-ember transition-all duration-400 ease-editorial group-hover:w-16" />
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
         </div>
+
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {content.capabilities.map((c, i) => (
+            <motion.li
+              key={c.title}
+              initial={{ opacity: 0, y: 50, rotateX: -30 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 1, ease: EASE, delay: i * 0.08 }}
+              style={{ transformPerspective: 1000 }}
+            >
+              <TiltCard max={12} cardClassName="rounded-[1.5rem]" className="h-full">
+                <div className="relative flex h-full flex-col rounded-[1.5rem] p-7 [transform-style:preserve-3d]">
+                  <span aria-hidden="true" className="absolute inset-0 rounded-[1.5rem] bg-paper-pure ring-1 ring-inset ring-ink/[0.07] shadow-[0_6px_0_rgba(16,19,26,0.06),0_30px_50px_-30px_rgba(8,15,46,0.35)] transition-shadow duration-500 group-hover:shadow-[0_6px_0_rgba(242,101,34,0.35),0_40px_60px_-30px_rgba(242,101,34,0.45)]" />
+                  <div className="relative flex items-center justify-between [transform:translateZ(40px)]">
+                    <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy-900 font-mono text-sm font-semibold text-amber transition-all duration-500 group-hover:text-white group-hover:[background:var(--brand-gradient)]">
+                      {pad(i + 1)}
+                    </span>
+                    <ServiceIcon name={service.slug} className="h-6 w-6 text-ink-faint transition-colors duration-500 group-hover:text-ember" />
+                  </div>
+                  <h3 className="relative mt-8 text-lg font-semibold text-ink [transform:translateZ(30px)]">{c.title}</h3>
+                  <p className="relative mt-3 text-[0.95rem] leading-relaxed text-ink-mute [transform:translateZ(20px)]">{c.description}</p>
+                  <span className="relative mt-auto block pt-6">
+                    <span className="block h-0.5 w-8 rounded-full [background:var(--brand-gradient)] transition-all duration-500 ease-editorial group-hover:w-20" />
+                  </span>
+                </div>
+              </TiltCard>
+            </motion.li>
+          ))}
+        </ul>
       </Container>
     </section>
   )
 }
 
 /* 4 — Technical applications */
-function ServiceApplications({ service, content, accent, accentBg }) {
+function ServiceApplications({ service, content }) {
   return (
     <section className="relative overflow-hidden bg-navy-900 py-24 text-paper lg:py-32">
-      <Container>
+      <span aria-hidden="true" className="grid-lines pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_at_top_left,black_10%,transparent_65%)]" />
+      <span aria-hidden="true" className="pointer-events-none absolute -bottom-40 -right-32 h-[30rem] w-[30rem] rounded-full bg-ember/20 blur-[120px]" />
+      <Container className="relative">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div className="max-w-xl">
             <Reveal>
-              <Eyebrow className={`${accent === 'text-amber' ? '!text-amber [&>span]:bg-amber/60' : '!text-ember [&>span]:bg-ember/60'}`}>
-                Technical applications
-              </Eyebrow>
+              <Eyebrow className={darkEyebrow}>Technical applications</Eyebrow>
             </Reveal>
-            <Reveal>
-              <h2 className="mt-6 text-display-md font-bold uppercase leading-[0.98] text-white">
-                Where it&apos;s applied.
-              </h2>
-            </Reveal>
+            <Heading lines={['Where it’s', 'applied.']} dark className="text-display-md" />
           </div>
           <Reveal>
-            <span className="font-mono text-xs uppercase tracking-[0.18em] text-paper/45">
-              {service.index} / 08
-            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-paper/45">{service.index} / 08</span>
           </Reveal>
         </div>
 
-        <ul className="mt-14 border-t border-white/12">
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2">
           {content.applications.map((a, i) => (
-            <Reveal key={a}>
-              <li className="group flex items-center gap-6 border-b border-white/12 py-6">
-                <span className={`font-mono text-sm ${accent}`}>{String(i + 1).padStart(2, '0')}</span>
-                <span className="flex-1 text-xl font-medium text-paper/85 transition-all duration-400 ease-editorial group-hover:translate-x-1 group-hover:text-white md:text-2xl">
-                  {a}
-                </span>
-                <span className={`h-px w-0 ${accentBg} transition-all duration-500 ease-editorial group-hover:w-16`} />
-              </li>
-            </Reveal>
+            <motion.li
+              key={a}
+              initial={{ opacity: 0, y: 40, rotateY: i % 2 ? 22 : -22 }}
+              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 1, ease: EASE, delay: i * 0.08 }}
+              style={{ transformPerspective: 1200 }}
+            >
+              <TiltCard max={10} cardClassName="rounded-2xl">
+                <div className="relative flex items-center gap-6 rounded-2xl p-6 [transform-style:preserve-3d] sm:p-7">
+                  <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-white/[0.05] ring-1 ring-inset ring-white/12 backdrop-blur transition-colors duration-500 group-hover:bg-white/[0.09] group-hover:ring-amber/40" />
+                  <span className="relative font-display text-4xl font-bold leading-none text-amber [transform:translateZ(40px)]">{pad(i + 1)}</span>
+                  <span className="relative flex-1 text-lg font-medium text-white [transform:translateZ(28px)] md:text-xl">{a}</span>
+                  <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-all duration-500 ease-editorial [transform:translateZ(34px)] group-hover:-rotate-45 group-hover:[background:var(--brand-gradient)]">
+                    <ArrowIcon className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+              </TiltCard>
+            </motion.li>
           ))}
         </ul>
       </Container>
@@ -246,164 +337,181 @@ function ServiceApplications({ service, content, accent, accentBg }) {
 }
 
 /* 5 — Equipment / systems */
-function ServiceEquipment({ content }) {
+function ServiceEquipment({ service, content }) {
   return (
-    <section className="bg-paper py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-paper py-24 lg:py-32">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
+        <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
             <Reveal>
               <Eyebrow>Equipment &amp; systems</Eyebrow>
             </Reveal>
+            <Heading lines={['What we', 'work with.']} className="text-display-sm" />
             <Reveal>
-              <h2 className="mt-6 text-display-sm font-bold uppercase leading-[1.0] text-ink">
-                What we work with.
-              </h2>
+              <p className="mt-6 max-w-md text-base leading-relaxed text-ink-mute">
+                The systems and components at the core of {service.title.toLowerCase()} — handled, fabricated and
+                installed to the standards demanding facilities require.
+              </p>
             </Reveal>
-          </div>
-          <div className="lg:col-span-8 lg:self-center">
-            <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3">
-              {content.equipment.map((e, i) => (
-                <Reveal key={e} delay={(i % 3) * 0.04}>
-                  <div className="group flex aspect-[5/3] flex-col justify-between bg-paper p-5 transition-colors duration-400 hover:bg-navy-900">
-                    <span className="font-mono text-[0.58rem] uppercase tracking-[0.2em] text-ember transition-colors group-hover:text-amber">
-                      EQ·{String(i + 1).padStart(2, '0')}
+
+            <motion.div
+              initial={{ opacity: 0, y: 60, rotateX: 20 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 1.2, ease: EASE }}
+              style={{ transformPerspective: 1400 }}
+              className="mt-10"
+            >
+              <TiltCard max={7} cardClassName="rounded-[1.75rem]">
+                <div className="relative aspect-[5/4] rounded-[1.75rem] [transform-style:preserve-3d]">
+                  <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.75rem] bg-navy-900 shadow-[0_40px_70px_-38px_rgba(8,15,46,0.75)]">
+                    <Photo id={serviceEquipmentImages[service.slug]} w={1200} alt="" className="transition-transform duration-[1.4s] ease-editorial group-hover:scale-110" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/20 to-transparent" />
+                  </div>
+                  <div className="absolute inset-x-6 bottom-6 flex items-end justify-between [transform:translateZ(50px)]">
+                    <span>
+                      <span className="block font-mono text-[0.6rem] uppercase tracking-[0.22em] text-amber">Fig. {service.index}</span>
+                      <span className="mt-1 block text-xl font-semibold text-white">{service.title}</span>
                     </span>
-                    <span className="text-base font-semibold leading-tight text-ink transition-colors duration-400 group-hover:text-white">
-                      {e}
+                    <span className="rounded-full bg-white/15 px-3 py-1 font-mono text-[0.6rem] uppercase tracking-[0.2em] text-white ring-1 ring-inset ring-white/25 backdrop-blur">
+                      {pad(content.equipment.length)} systems
                     </span>
                   </div>
-                </Reveal>
-              ))}
-            </div>
+                </div>
+              </TiltCard>
+            </motion.div>
           </div>
+
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:col-span-7">
+            {content.equipment.map((e, i) => (
+              <motion.li
+                key={e}
+                initial={{ opacity: 0, y: 40, rotateX: -50 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.9, ease: EASE, delay: i * 0.06 }}
+                style={{ transformPerspective: 900 }}
+              >
+                <TiltCard max={14} cardClassName="rounded-2xl">
+                  <div className="relative flex aspect-square flex-col justify-between rounded-2xl p-5 [transform-style:preserve-3d]">
+                    <span aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-2xl bg-navy-900 shadow-[0_5px_0_#030719,0_26px_36px_-20px_rgba(8,15,46,0.6)]">
+                      <span className="grid-lines absolute inset-0 opacity-30" />
+                      <span className="absolute inset-0 opacity-0 transition-opacity duration-500 [background:var(--brand-gradient)] group-hover:opacity-100" />
+                    </span>
+                    <span className="relative flex items-center justify-between [transform:translateZ(30px)]">
+                      <span className="rounded-full bg-white/10 px-2.5 py-1 font-mono text-[0.58rem] uppercase tracking-[0.2em] text-amber ring-1 ring-inset ring-white/15 transition-colors group-hover:text-white">
+                        EQ·{pad(i + 1)}
+                      </span>
+                      <span className="h-2 w-2 rounded-full bg-white/40 transition-all duration-500 group-hover:bg-white group-hover:shadow-[0_0_12px_#fff]" />
+                    </span>
+                    <span className="relative text-base font-semibold leading-tight text-white [transform:translateZ(45px)] sm:text-lg">{e}</span>
+                  </div>
+                </TiltCard>
+              </motion.li>
+            ))}
+          </ul>
         </div>
       </Container>
     </section>
   )
 }
 
-/* 6 — Process */
-function ServiceProcess({ content, accent }) {
+/* 6 — Process timeline */
+function ServiceProcess({ content }) {
+  const ref = useRef(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start 75%', 'end 60%'] })
+  const line = useTransform(scrollYProgress, [0, 1], [0, 1])
+
   return (
-    <section className="bg-ink py-24 text-paper lg:py-32">
-      <Container>
+    <section ref={ref} className="relative overflow-hidden bg-ink py-24 text-paper lg:py-32">
+      <span aria-hidden="true" className="grid-lines pointer-events-none absolute inset-0 opacity-40 [mask-image:radial-gradient(ellipse_at_center,black_10%,transparent_70%)]" />
+      <Container className="relative">
         <Reveal>
-          <Eyebrow className={`${accent === 'text-amber' ? '!text-amber [&>span]:bg-amber/60' : '!text-ember [&>span]:bg-ember/60'}`}>
-            How we deliver
-          </Eyebrow>
+          <Eyebrow className={darkEyebrow}>How we deliver</Eyebrow>
         </Reveal>
-        <Reveal>
-          <h2 className="mt-6 text-display-md font-bold uppercase leading-[0.98] text-white">
-            The process
-          </h2>
-        </Reveal>
+        <Heading lines={['The', 'process.']} dark className="text-display-md" />
 
-        <div className="mt-14 grid gap-px border border-white/12 bg-white/12 md:grid-cols-2 lg:grid-cols-4">
-          {content.process.map((step, i) => (
-            <Reveal key={step.index} delay={(i % 4) * 0.06}>
-              <div className="group relative h-full bg-ink p-8">
-                <span className="index-num block font-display text-5xl font-bold leading-none">{step.index}</span>
-                <h3 className="mt-5 text-xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-paper/65">{step.description}</p>
-                <span className={`mt-6 block h-px w-8 ${accent === 'text-amber' ? 'bg-amber' : 'bg-ember'} transition-all duration-500 ease-editorial group-hover:w-16`} />
-              </div>
-            </Reveal>
-          ))}
+        <div className="relative mt-16">
+          <span aria-hidden="true" className="absolute left-7 top-0 h-full w-px bg-white/10 md:left-0 md:top-7 md:h-px md:w-full" />
+          <motion.span aria-hidden="true" style={{ scaleY: line }} className="absolute left-7 top-0 h-full w-px origin-top [background:var(--brand-gradient)] md:hidden" />
+          <motion.span aria-hidden="true" style={{ scaleX: line }} className="absolute left-0 top-7 hidden h-px w-full origin-left [background:var(--brand-gradient)] md:block" />
+
+          <ol className="relative grid gap-8 md:grid-cols-4 md:gap-5">
+            {content.process.map((step, i) => (
+              <motion.li
+                key={step.index}
+                initial={{ opacity: 0, y: 40, rotateX: -40 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.9, ease: EASE, delay: i * 0.1 }}
+                style={{ transformPerspective: 900 }}
+                className="flex gap-5 md:block"
+              >
+                <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold text-white shadow-[0_6px_0_#7a2a0b,0_22px_34px_-12px_rgba(242,101,34,0.6)]" style={{ background: 'var(--brand-gradient)' }}>
+                  {step.index}
+                </span>
+                <TiltCard max={10} cardClassName="rounded-2xl" className="flex-1 md:mt-7">
+                  <div className="relative rounded-2xl p-6 [transform-style:preserve-3d]">
+                    <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10 transition-colors duration-500 group-hover:bg-white/[0.08]" />
+                    <h3 className="relative text-lg font-semibold text-white [transform:translateZ(30px)]">{step.title}</h3>
+                    <p className="relative mt-2 text-sm leading-relaxed text-paper/65 [transform:translateZ(18px)]">{step.description}</p>
+                  </div>
+                </TiltCard>
+              </motion.li>
+            ))}
+          </ol>
         </div>
       </Container>
     </section>
   )
 }
 
-/* 7 — Industries / applications */
+/* 7 — Industries served */
 function ServiceIndustries({ content }) {
+  const list = content.industries.map((sl) => industries.find((x) => x.slug === sl)).filter(Boolean)
   return (
     <section className="bg-paper-warm py-24 lg:py-32">
       <Container>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
+        <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <div>
             <Reveal>
               <Eyebrow>Industries served</Eyebrow>
             </Reveal>
-            <Reveal>
-              <h2 className="mt-6 text-display-sm font-bold uppercase leading-[1.0] text-ink">
-                Where it&apos;s used.
-              </h2>
-            </Reveal>
-            <Reveal>
-              <Link
-                to="/industries"
-                className="group mt-8 inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.18em] text-ink transition-colors hover:text-ember"
-              >
-                <span className="h-px w-8 bg-ember transition-all duration-400 ease-editorial group-hover:w-12" />
-                All industries
-                <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-              </Link>
-            </Reveal>
+            <Heading lines={['Where it’s', 'used.']} className="text-display-sm" />
           </div>
-          <div className="lg:col-span-8">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {content.industries.map((sl, i) => (
-                <Reveal key={sl} delay={(i % 2) * 0.05}>
-                  <Link
-                    to="/industries"
-                    className="group flex items-center gap-5 border border-line bg-paper p-6 transition-colors duration-400 hover:border-ink"
-                  >
-                    <span className="text-ember">
-                      <ServiceIcon name={industries.find((x) => x.slug === sl)?.icon} className="h-8 w-8" />
-                    </span>
-                    <span className="flex-1 text-lg font-semibold text-ink">{industryTitle(sl)}</span>
-                    <span className="text-ink-faint transition-all duration-400 ease-editorial group-hover:translate-x-1 group-hover:text-ember">→</span>
-                  </Link>
-                </Reveal>
-              ))}
-            </div>
-          </div>
+          <Reveal>
+            <Button3D to="/industries" variant="outline">All industries</Button3D>
+          </Reveal>
         </div>
-      </Container>
-    </section>
-  )
-}
 
-/* 8 — Technical visual */
-function ServiceVisual({ service, content }) {
-  return (
-    <section className="bg-navy-950 py-24 text-paper lg:py-32">
-      <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-5">
-            <Reveal>
-              <Eyebrow className={`${content.accent === 'amber' ? '!text-amber [&>span]:bg-amber/60' : '!text-ember [&>span]:bg-ember/60'}`}>
-                Technical view
-              </Eyebrow>
-            </Reveal>
-            <Reveal>
-              <h2 className="mt-6 text-display-md font-bold uppercase leading-[0.98] text-white">
-                Engineered
-                <br />
-                in detail.
-              </h2>
-            </Reveal>
-            <Reveal>
-              <p className="mt-7 max-w-md text-lg leading-relaxed text-paper/75">
-                A schematic view of the {service.title.toLowerCase()} scope — the systems,
-                connections, and sequence behind the work.
-              </p>
-            </Reveal>
-          </div>
-          <div className="lg:col-span-7">
-            <Reveal>
-              <div className="text-paper">
-                <TechnicalVisual
-                  type={content.visual}
-                  use3D={service.slug === 'skid-fabrication'}
-                  label={`Fig. ${service.index} — ${service.title}`}
-                />
-              </div>
-            </Reveal>
-          </div>
-        </div>
+        <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {list.map((ind, i) => (
+            <motion.li
+              key={ind.slug}
+              initial={{ opacity: 0, y: 40, rotateX: -35 }}
+              whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.9, ease: EASE, delay: i * 0.07 }}
+              style={{ transformPerspective: 900 }}
+            >
+              <TiltCard as={Link} to={`/industries/${ind.slug}`} max={12} cardClassName="rounded-2xl" aria-label={ind.title}>
+                <div className="relative flex min-h-[12rem] flex-col justify-between rounded-2xl p-6 [transform-style:preserve-3d]">
+                  <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-paper-pure ring-1 ring-inset ring-ink/[0.07] shadow-[0_6px_0_rgba(16,19,26,0.06),0_30px_50px_-30px_rgba(8,15,46,0.35)] transition-shadow duration-500 group-hover:shadow-[0_6px_0_rgba(242,101,34,0.35),0_40px_60px_-30px_rgba(242,101,34,0.45)]" />
+                  <span className="relative flex items-center justify-between [transform:translateZ(35px)]">
+                    <span className="grid h-12 w-12 place-items-center rounded-xl bg-navy-900 text-amber transition-all duration-500 group-hover:text-white group-hover:[background:var(--brand-gradient)]">
+                      <ServiceIcon name={ind.icon} className="h-6 w-6" />
+                    </span>
+                    <ArrowIcon className="h-4 w-4 text-ink-faint transition-all duration-500 group-hover:-rotate-45 group-hover:text-ember" />
+                  </span>
+                  <span className="relative [transform:translateZ(28px)]">
+                    <span className="block font-mono text-[0.6rem] text-ember">{ind.index}</span>
+                    <span className="mt-1 block text-lg font-semibold text-ink">{ind.title}</span>
+                  </span>
+                </div>
+              </TiltCard>
+            </motion.li>
+          ))}
+        </ul>
       </Container>
     </section>
   )
@@ -420,28 +528,45 @@ function ServiceFaq({ content }) {
             <Reveal>
               <Eyebrow>Questions</Eyebrow>
             </Reveal>
+            <Heading lines={['Good to', 'know.']} className="text-display-sm" />
             <Reveal>
-              <h2 className="mt-6 text-display-sm font-bold uppercase leading-[1.0] text-ink">
-                Good to know.
-              </h2>
+              <p className="mt-6 max-w-sm text-base leading-relaxed text-ink-mute">
+                Something not covered here? Our team will answer it directly.
+              </p>
+            </Reveal>
+            <Reveal>
+              <div className="mt-8">
+                <Button3D to="/contact" variant="dark" size="md">Ask a question</Button3D>
+              </div>
             </Reveal>
           </div>
-          <div className="lg:col-span-8">
-            <ul className="border-t border-line">
-              {content.faq.map((f, i) => {
-                const isOpen = open === i
-                return (
-                  <li key={f.q} className="border-b border-line">
+          <ul className="space-y-3 lg:col-span-8">
+            {content.faq.map((f, i) => {
+              const isOpen = open === i
+              return (
+                <Reveal as="li" key={f.q} delay={i * 0.05}>
+                  <div
+                    className={`overflow-hidden rounded-2xl ring-1 ring-inset transition-all duration-500 ${
+                      isOpen
+                        ? 'bg-paper-pure shadow-[0_30px_50px_-30px_rgba(8,15,46,0.35)] ring-ember/30'
+                        : 'bg-paper-warm ring-ink/[0.07] hover:ring-ink/20'
+                    }`}
+                  >
                     <button
                       onClick={() => setOpen(isOpen ? -1 : i)}
-                      className="flex w-full items-center justify-between gap-6 py-6 text-left"
+                      className="flex w-full items-center justify-between gap-6 p-6 text-left"
                       aria-expanded={isOpen}
                     >
                       <span className="flex items-baseline gap-4">
-                        <span className="font-mono text-xs text-ember">{String(i + 1).padStart(2, '0')}</span>
+                        <span className="font-mono text-xs text-ember">{pad(i + 1)}</span>
                         <span className="text-lg font-semibold text-ink md:text-xl">{f.q}</span>
                       </span>
-                      <span className={`shrink-0 text-2xl text-ember transition-transform duration-400 ease-editorial ${isOpen ? 'rotate-45' : ''}`} aria-hidden="true">
+                      <span
+                        aria-hidden="true"
+                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-xl transition-all duration-500 ease-editorial ${
+                          isOpen ? 'rotate-45 text-white [background:var(--brand-gradient)]' : 'bg-navy-900 text-white'
+                        }`}
+                      >
                         +
                       </span>
                     </button>
@@ -454,15 +579,15 @@ function ServiceFaq({ content }) {
                           transition={{ duration: 0.35, ease: EASE }}
                           className="overflow-hidden"
                         >
-                          <p className="max-w-2xl pb-6 pl-8 text-base leading-relaxed text-ink-mute">{f.a}</p>
+                          <p className="max-w-2xl px-6 pb-6 pl-[3.25rem] text-base leading-relaxed text-ink-mute">{f.a}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
+                  </div>
+                </Reveal>
+              )
+            })}
+          </ul>
         </div>
       </Container>
     </section>
@@ -478,37 +603,44 @@ function ServiceRelated({ content }) {
         <Reveal>
           <Eyebrow>Related services</Eyebrow>
         </Reveal>
-        <Reveal>
-          <h2 className="mt-6 text-display-sm font-bold uppercase leading-[1.0] text-ink">
-            Explore more capabilities.
-          </h2>
-        </Reveal>
+        <Heading lines={['Explore more', 'capabilities.']} className="text-display-sm" />
 
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <ul className="mt-14 grid gap-5 md:grid-cols-3">
           {related.map((s, i) => (
-            <Reveal key={s.slug} delay={i * 0.06}>
-              <Link
-                to={`/services/${s.slug}`}
-                className="group flex h-full flex-col justify-between border border-line bg-paper p-7 transition-colors duration-400 hover:border-ink"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-ember">{s.index}</span>
-                  <span className="text-ink-faint transition-colors group-hover:text-ember">
-                    <ServiceIcon name={s.slug} className="h-7 w-7" />
+            <motion.li
+              key={s.slug}
+              initial={{ opacity: 0, y: 50, rotateY: -20 }}
+              whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
+              viewport={viewportOnce}
+              transition={{ duration: 1, ease: EASE, delay: i * 0.1 }}
+              style={{ transformPerspective: 1200 }}
+            >
+              <TiltCard as={Link} to={`/services/${s.slug}`} max={10} className="h-full" cardClassName="rounded-[1.5rem]" aria-label={s.title}>
+                <article className="relative flex h-full min-h-[19rem] flex-col justify-between rounded-[1.5rem] p-7 text-white [transform-style:preserve-3d]">
+                  <span aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.5rem] bg-navy-900 shadow-[0_6px_0_#030719,0_34px_50px_-26px_rgba(8,15,46,0.7)]">
+                    <span className="grid-lines absolute inset-0 opacity-30" />
+                    <span className="absolute inset-0 opacity-0 transition-opacity duration-700 [background:var(--brand-gradient)] group-hover:opacity-100" />
+                    <span className="absolute -right-6 -top-10 font-display text-[9rem] font-bold leading-none text-white/[0.06]">{s.index}</span>
                   </span>
-                </div>
-                <div className="mt-10">
-                  <h3 className="text-xl font-semibold text-ink transition-colors group-hover:text-ember">{s.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-ink-mute">{s.summary}</p>
-                </div>
-                <span className="mt-6 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-ink">
-                  View service
-                  <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-                </span>
-              </Link>
-            </Reveal>
+                  <span className="relative flex items-center justify-between [transform:translateZ(40px)]">
+                    <span className="grid h-14 w-14 place-items-center rounded-2xl bg-white/10 text-amber ring-1 ring-inset ring-white/15 transition-colors duration-500 group-hover:bg-white group-hover:text-ember">
+                      <ServiceIcon name={s.slug} className="h-7 w-7" />
+                    </span>
+                    <span className="font-mono text-xs text-paper/50 group-hover:text-white/80">{s.index}</span>
+                  </span>
+                  <span className="relative mt-10 [transform:translateZ(30px)]">
+                    <span className="block text-xl font-semibold">{s.title}</span>
+                    <span className="mt-3 block text-sm leading-relaxed text-paper/70 group-hover:text-white/90">{s.summary}</span>
+                    <span className="mt-6 inline-flex items-center gap-2 font-mono text-[0.68rem] uppercase tracking-[0.16em]">
+                      View service
+                      <ArrowIcon className="h-3 w-3 transition-transform duration-500 group-hover:-rotate-45" />
+                    </span>
+                  </span>
+                </article>
+              </TiltCard>
+            </motion.li>
           ))}
-        </div>
+        </ul>
       </Container>
     </section>
   )
@@ -531,8 +663,9 @@ function ServiceCta({ next }) {
           className="h-full w-full object-cover"
         />
       </motion.div>
-      <span className="absolute inset-0 bg-navy-950/82" />
+      <span className="absolute inset-0 bg-navy-950/80" />
       <span className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/40 to-navy-950/70" />
+      <span aria-hidden="true" className="grid-lines pointer-events-none absolute inset-0 opacity-30" />
 
       <Container className="relative z-10 py-24 text-center">
         <motion.p
@@ -566,20 +699,24 @@ function ServiceCta({ next }) {
           transition={{ duration: 0.7, ease: EASE, delay: 0.2 }}
           className="mt-11 flex flex-wrap justify-center gap-4"
         >
-          <PremiumButton to="/contact" variant="ember">Request a Quote</PremiumButton>
-          <PremiumButton to="/services" variant="glass" arrow={false}>
-            All services
-          </PremiumButton>
+          <Button3D to="/contact" size="lg">Request a quote</Button3D>
+          <Button3D to="/services" variant="glass" size="lg" arrow={false}>All services</Button3D>
         </motion.div>
 
-        <div className="mt-16 border-t border-white/12 pt-8">
-          <Link to={`/services/${next.slug}`} className="group inline-flex flex-col items-center gap-2">
-            <span className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-paper/45">Next service</span>
-            <span className="flex items-baseline gap-3 text-2xl font-semibold text-white transition-colors group-hover:text-amber md:text-3xl">
-              {next.title}
-              <span className="transition-transform duration-400 ease-editorial group-hover:translate-x-1">→</span>
-            </span>
-          </Link>
+        <div className="mx-auto mt-16 max-w-md">
+          <TiltCard as={Link} to={`/services/${next.slug}`} max={10} cardClassName="rounded-2xl" aria-label={`Next service: ${next.title}`}>
+            <div className="relative flex items-center gap-5 rounded-2xl p-4 text-left [transform-style:preserve-3d]">
+              <span aria-hidden="true" className="absolute inset-0 rounded-2xl bg-white/[0.07] ring-1 ring-inset ring-white/15 backdrop-blur-md transition-colors duration-500 group-hover:bg-white/[0.12]" />
+              <span className="relative grid h-14 w-14 shrink-0 place-items-center rounded-xl text-white [transform:translateZ(36px)]" style={{ background: 'var(--brand-gradient)' }}>
+                <ServiceIcon name={next.slug} className="h-7 w-7" />
+              </span>
+              <span className="relative flex-1 [transform:translateZ(24px)]">
+                <span className="block font-mono text-[0.6rem] uppercase tracking-[0.2em] text-paper/50">Next service · {next.index}</span>
+                <span className="mt-1 block text-lg font-semibold text-white">{next.title}</span>
+              </span>
+              <ArrowIcon className="relative h-4 w-4 text-amber transition-transform duration-500 group-hover:translate-x-1" />
+            </div>
+          </TiltCard>
         </div>
       </Container>
     </section>

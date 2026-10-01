@@ -133,7 +133,7 @@ export default function MobileNav({ open, onClose }) {
                 {industries.map((ind) => (
                   <li key={ind.slug}>
                     <Link
-                      to="/industries"
+                      to={`/industries/${ind.slug}`}
                       onClick={onClose}
                       className="group flex items-center gap-3.5 rounded-xl px-2 py-2 text-ink-soft transition-colors hover:bg-ink/[0.04] hover:text-ember"
                     >

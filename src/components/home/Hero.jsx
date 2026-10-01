@@ -1,16 +1,17 @@
-import { useRef, useState } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import Container from '@/components/ui/Container'
 import Button3D from '@/components/ui/Button3D'
 import TiltCard from '@/components/ui/TiltCard'
 import ServiceIcon from '@/components/icons/ServiceIcon'
 import { EASE, lineChild } from '@/lib/motion'
-import { img, media } from '@/data/media'
+import { img, homeHeroSlides } from '@/data/media'
 import { services } from '@/data/services'
 import { industries } from '@/data/industries'
 import { processSteps } from '@/data/process'
 
 const HEADLINE = ['Engineering', 'what industry', 'depends on.']
+const SLIDE_MS = 6500
 
 // Facts derived from the site's own data — no invented metrics.
 const STATS = [
@@ -31,7 +32,16 @@ const rise = {
 
 export default function Hero() {
   const ref = useRef(null)
-  const [failed, setFailed] = useState(false)
+  const reduce = useReducedMotion()
+  const [failed, setFailed] = useState({})
+  const [active, setActive] = useState(0)
+
+  // Auto-advance; any manual pick restarts the timer.
+  useEffect(() => {
+    const t = setTimeout(() => setActive((a) => (a + 1) % homeHeroSlides.length), SLIDE_MS)
+    return () => clearTimeout(t)
+  }, [active])
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
@@ -47,23 +57,39 @@ export default function Hero() {
   return (
     <section
       ref={ref}
-      className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-navy-950 text-paper"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-navy-950 text-paper"
     >
-      {/* Image layer */}
-      <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0">
-        {!failed ? (
-          <motion.img
-            src={img(media.hero, 2200)}
-            alt="Industrial fabrication — welding on a steel structure"
-            onError={() => setFailed(true)}
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.6, ease: EASE }}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full bg-navy-900" />
-        )}
+      {/* Image layer — crossfading slideshow with a slow Ken Burns push */}
+      <motion.div style={{ scale: imgScale, y: imgY }} className="absolute inset-0 bg-navy-900">
+        <motion.div
+          initial={{ scale: 1.2, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.6, ease: EASE }}
+          className="absolute inset-0"
+        >
+          {homeHeroSlides.map((s, i) =>
+            failed[i] ? null : (
+              <motion.img
+                key={s.id}
+                src={img(s.id, 2000, 75)}
+                alt={i === active ? s.alt : ''}
+                aria-hidden={i !== active}
+                fetchpriority={i === 0 ? 'high' : 'low'}
+                onError={() => setFailed((f) => ({ ...f, [i]: true }))}
+                initial={{ opacity: i === 0 ? 1 : 0, scale: reduce ? 1 : 1.12 }}
+                animate={{
+                  opacity: i === active ? 1 : 0,
+                  scale: reduce ? 1 : i === active ? 1 : 1.12,
+                }}
+                transition={{
+                  opacity: { duration: 1.4, ease: 'easeInOut' },
+                  scale: { duration: i === active ? SLIDE_MS / 1000 + 1.5 : 1.4, ease: 'linear' },
+                }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )
+          )}
+        </motion.div>
       </motion.div>
 
       {/* Tonal overlays (kept bright via warm edge light, readable copy) */}
@@ -84,7 +110,7 @@ export default function Hero() {
       {/* Copy */}
       <motion.div
         style={{ y: copyY, opacity: fade }}
-        className="relative z-10 flex h-full items-end pb-20 sm:pb-24"
+        className="relative z-10 flex min-h-[100svh] items-end pb-12 pt-[calc(var(--nav-h)+4rem)] sm:pb-14"
       >
         <Container className="grid items-end gap-12 lg:grid-cols-12">
           <motion.div variants={container} initial="hidden" animate="show" className="lg:col-span-8">
@@ -116,6 +142,10 @@ export default function Hero() {
             <motion.div variants={rise} className="mt-10 flex flex-wrap gap-4">
               <Button3D to="/services" variant="primary" size="lg">Explore Our Services</Button3D>
               <Button3D to="/contact" variant="glass" size="lg">Request a Quote</Button3D>
+            </motion.div>
+
+            <motion.div variants={rise}>
+              <SlideIndicators active={active} onSelect={setActive} />
             </motion.div>
           </motion.div>
 
@@ -167,6 +197,57 @@ export default function Hero() {
         <span className="h-10 w-px bg-gradient-to-b from-paper/60 to-transparent" />
       </motion.div>
     </section>
+  )
+}
+
+function SlideIndicators({ active, onSelect }) {
+  const total = homeHeroSlides.length
+  return (
+    <div className="mt-8 flex items-center gap-5">
+      <span className="font-mono text-[0.62rem] uppercase tracking-[0.22em] text-paper/60 tabular-nums">
+        <span className="text-white">{String(active + 1).padStart(2, '0')}</span> / {String(total).padStart(2, '0')}
+      </span>
+      <div className="flex items-center gap-2" role="tablist" aria-label="Hero images">
+        {homeHeroSlides.map((s, i) => (
+          <button
+            key={s.id}
+            type="button"
+            role="tab"
+            aria-selected={i === active}
+            aria-label={`Show image ${i + 1}: ${s.label}`}
+            onClick={() => onSelect(i)}
+            className="group/dot relative py-2"
+          >
+            <span
+              className={`block h-[3px] overflow-hidden rounded-full bg-white/25 transition-all duration-500 group-hover/dot:bg-white/45 ${
+                i === active ? 'w-12 sm:w-16' : 'w-5 sm:w-7'
+              }`}
+            >
+              {i === active && (
+                <motion.span
+                  key={`fill-${active}`}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: SLIDE_MS / 1000, ease: 'linear' }}
+                  className="block h-full w-full origin-left [background:var(--brand-gradient)]"
+                />
+              )}
+            </span>
+          </button>
+        ))}
+      </div>
+      <span className="relative hidden h-4 overflow-hidden sm:block">
+        <motion.span
+          key={active}
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: '0%', opacity: 1 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="block font-mono text-[0.62rem] uppercase leading-4 tracking-[0.22em] text-amber"
+        >
+          {homeHeroSlides[active].label}
+        </motion.span>
+      </span>
+    </div>
   )
 }
 

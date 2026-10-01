@@ -8,7 +8,7 @@ export const site = {
   descriptor:
     'International mechanical contracting and fabrication delivered to the highest industrial standards.',
   logo: '/brand/lemos-international-logo.webp',
-  ogImage: '/brand/lemos-og-image.webp',
+  ogImage: '/brand/lemos-og-image.jpg',
   contact: {
     email: '', // TODO: verified company email (leave empty until confirmed)
     phone: '+971 4 288 3589',

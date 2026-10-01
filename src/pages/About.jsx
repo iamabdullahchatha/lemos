@@ -715,7 +715,7 @@ function AboutIndustries() {
               style={{ transformPerspective: 1200 }}
               className={i === 0 ? 'sm:col-span-2 lg:col-span-1' : ''}
             >
-              <TiltCard as={Link} to="/industries" max={10} cardClassName="rounded-[1.5rem]" aria-label={ind.title}>
+              <TiltCard as={Link} to={`/industries/${ind.slug}`} max={10} cardClassName="rounded-[1.5rem]" aria-label={ind.title}>
                 <div className="relative flex aspect-[4/5] flex-col justify-between rounded-[1.5rem] p-5 [transform-style:preserve-3d] max-lg:sm:aspect-[16/10] lg:aspect-[3/5]">
                   <div aria-hidden="true" className="absolute inset-0 overflow-hidden rounded-[1.5rem] bg-navy-900 shadow-[0_40px_60px_-35px_rgba(8,15,46,0.7)]">
                     <Photo id={aboutSectorImages[ind.slug]} w={800} className="transition-transform duration-[1.4s] ease-editorial group-hover:scale-110" />

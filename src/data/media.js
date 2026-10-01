@@ -20,7 +20,7 @@ export const img = (id, w = 1600, q = 80) =>
 // Single-use page imagery.
 export const media = {
   hero: 'photo-1504328345606-18bbc8c9d7d1', // welder, blue sparks
-  statement: 'photo-1726731782158-fcf6822b6ca4', // process plant, red & white piping
+  statement: 'photo-1569950044190-6d22b2693955', // steel cutting, bright sparks — warm & crisp
   homeAbout: 'photo-1742112125567-3e8967bad60f', // engineers reviewing plans on site
   pillars: 'photo-1509390288171-ce2088f7d08e', // power plant at night, full moon
   finalCta: 'photo-1768128834456-0bb2432f727a', // facility lit at night, reflection
@@ -29,6 +29,15 @@ export const media = {
   contactHero: 'photo-1647699352421-fb973ac01750', // industrial plant lit at night
   serviceCta: 'photo-1573153178631-49e3aa9e018b', // factory silhouette at night
 }
+
+// Home hero slideshow — media.hero leads, followed by four further scenes.
+export const homeHeroSlides = [
+  { id: media.hero, label: 'Fabrication', alt: 'Industrial fabrication — welding on a steel structure' },
+  { id: 'photo-1633829131104-e2134f75c6e5', label: 'Offshore', alt: 'Offshore oil platform at sunset' },
+  { id: 'photo-1745748420819-dd57cb012cf9', label: 'Refining', alt: 'Refinery storage tanks lit up at night' },
+  { id: 'photo-1777915627530-fc3decb749cf', label: 'Processing', alt: 'Refinery complex at dusk with barges' },
+  { id: 'photo-1648555394313-494797ad48fc', label: 'Upstream', alt: 'Jack-up drilling rigs at dusk' },
+]
 
 // Home page service cards.
 export const serviceCardImages = {
@@ -174,6 +183,73 @@ export const processImages = {
   installation: 'photo-1530639834082-05bafb67fbbe',
   testing: 'photo-1744302570296-d4bcb55b7002',
   maintenance: 'photo-1565954786194-d22abeaac3ae',
+}
+
+// Services index: hero and per-service cards.
+export const servicesPage = {
+  hero: 'photo-1455165814004-1126a7199f9b', // welder, blue arc close-up
+  cards: {
+    'mechanical-contracting': 'photo-1563456020159-b74d67e78c26',
+    'pipe-fabrication-installation': 'photo-1529479627062-5f1f0b88912a',
+    'shutdowns-turnarounds': 'photo-1582489851557-810dd5ce437a',
+    'structural-fabrication': 'photo-1600965581129-eef8a214ec9d',
+    'tanks-vessel-fabrication': 'photo-1790175138991-1898bd553ea4',
+    'equipment-installation': 'photo-1521216894446-e6b5a19d17d6',
+    'maintenance-services': 'photo-1748027869634-fc2e545cfb0c',
+    'skid-fabrication': 'photo-1652785482935-b6450b5b47f9',
+  },
+  // "Built for demanding industries" sector cards.
+  industries: {
+    'oil-gas': 'photo-1722183704200-e96339975ba4', // offshore platform, open sea
+    petrochemical: 'photo-1770832597530-f2c720e7bd27', // complex with steam stacks
+    refineries: 'photo-1743723180480-243b89c5ebaa', // refinery by a river at dusk
+    'energy-power': 'photo-1780396140802-52309c205050', // electrical substation
+    industrial: 'photo-1671022442106-c787685d9fed', // structural steel stock
+  },
+}
+
+// Service detail: equipment & systems feature image.
+export const serviceEquipmentImages = {
+  'mechanical-contracting': 'photo-1653379290878-1e839993509a',
+  'pipe-fabrication-installation': 'photo-1631622483070-8ea904171f11',
+  'shutdowns-turnarounds': 'photo-1759668987649-a2057d0a9f35',
+  'structural-fabrication': 'photo-1493476523860-a6de6ce1b0c3',
+  'tanks-vessel-fabrication': 'photo-1765405016584-0ad9f20e2ff9',
+  'equipment-installation': 'photo-1730584475369-398711f8276e',
+  'maintenance-services': 'photo-1738918927564-5476c98c62a1',
+  'skid-fabrication': 'photo-1711571603473-6119c6ede1ee',
+}
+
+// Industries index CTA backdrop.
+export const industriesCta = 'photo-1784915478051-0ea1342a00bc' // LNG tanks across the water
+
+// Industry detail pages: hero, overview and one photo per application.
+export const industryPages = {
+  'oil-gas': {
+    hero: 'photo-1600221574280-9bcd5d108100',
+    overview: 'photo-1765005629275-110a02f16d65',
+    apps: ['photo-1648369000096-109763c11e8e', 'photo-1565364507085-325347bae748', 'photo-1775580279270-574c001be3a5'],
+  },
+  petrochemical: {
+    hero: 'photo-1566221857770-508d35ee6220',
+    overview: 'photo-1733069348827-bb538b2a6a1f',
+    apps: ['photo-1670689334799-cdc6777db8cc', 'photo-1513828583688-c52646db42da', 'photo-1634921490820-4f6df705223c'],
+  },
+  refineries: {
+    hero: 'photo-1571524522669-99d0c9e7264d',
+    overview: 'photo-1744301062835-b5b8fd23251b',
+    apps: ['photo-1613903580946-6300f1f96b85', 'photo-1714504904786-b6732390b206', 'photo-1613620844865-ffb87d753609'],
+  },
+  'energy-power': {
+    hero: 'photo-1591200834528-4050ce99fe78',
+    overview: 'photo-1576053437895-4253b2d33985',
+    apps: ['photo-1636867759143-c28c1e909bd3', 'photo-1756888218467-8fff8f3d423b', 'photo-1598621961279-557cec9ba744'],
+  },
+  industrial: {
+    hero: 'photo-1655936073069-07b2c9dc2db6',
+    overview: 'photo-1652204775379-2b4ace437a2d',
+    apps: ['photo-1509024368907-57294758cfc5', 'photo-1659579740355-9fd915e0a9aa', 'photo-1564183063457-680b3759a5bd'],
+  },
 }
 
 // Home page 3D field gallery.
