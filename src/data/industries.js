@@ -38,3 +38,27 @@ export const industries = [
     icon: 'industrial',
   },
 ]
+
+// Per-industry detail — generic to the sector and Lemos's stated domain.
+export const industryDetail = {
+  'oil-gas': {
+    applications: ['Upstream facilities', 'Midstream & pipelines', 'Downstream processing'],
+    services: ['mechanical-contracting', 'pipe-fabrication-installation', 'shutdowns-turnarounds'],
+  },
+  petrochemical: {
+    applications: ['Process plant fabrication', 'Mechanical works', 'Piping systems'],
+    services: ['pipe-fabrication-installation', 'structural-fabrication', 'equipment-installation'],
+  },
+  refineries: {
+    applications: ['Turnarounds & shutdowns', 'Unit fabrication', 'Maintenance'],
+    services: ['shutdowns-turnarounds', 'maintenance-services', 'tanks-vessel-fabrication'],
+  },
+  'energy-power': {
+    applications: ['Mechanical packages', 'Skid systems', 'Equipment installation'],
+    services: ['skid-fabrication', 'equipment-installation', 'structural-fabrication'],
+  },
+  industrial: {
+    applications: ['Structural installation', 'Equipment setting', 'Plant maintenance'],
+    services: ['structural-fabrication', 'equipment-installation', 'maintenance-services'],
+  },
+}

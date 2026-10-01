@@ -138,10 +138,10 @@ export default function Hero() {
 function HeroTech() {
   return (
     <Container className="relative h-full">
-      <div className="absolute left-[var(--edge)] top-28 font-mono text-[0.6rem] uppercase tracking-[0.25em] text-paper/40">
+      <div className="absolute left-[var(--edge)] top-[calc(var(--nav-h)+1.5rem)] font-mono text-[0.6rem] uppercase tracking-[0.25em] text-paper/40">
         N 24°·E
       </div>
-      <div className="absolute right-[var(--edge)] top-28 hidden font-mono text-[0.6rem] uppercase tracking-[0.25em] text-paper/40 sm:block">
+      <div className="absolute right-[var(--edge)] top-[calc(var(--nav-h)+1.5rem)] hidden font-mono text-[0.6rem] uppercase tracking-[0.25em] text-paper/40 sm:block">
         Lemos / 001
       </div>
       <span className="absolute right-[var(--edge)] top-1/2 hidden h-24 w-px -translate-y-1/2 bg-white/15 sm:block" />

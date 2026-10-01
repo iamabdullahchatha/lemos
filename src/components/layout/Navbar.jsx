@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { site } from '@/data/site'
 import { primaryNav, quoteCta } from '@/data/navigation'
 import { EASE } from '@/lib/motion'
@@ -8,10 +8,70 @@ import useMagnetic from '@/hooks/useMagnetic'
 import ServicesMegaMenu from './ServicesMegaMenu'
 import IndustriesMenu from './IndustriesMenu'
 import MobileNav from './MobileNav'
+import { ArrowIcon, ClockIcon, PhoneIcon, PinIcon } from './NavIcons'
 
 function isActiveItem(item, pathname) {
   if (item.to === '/') return pathname === '/'
   return pathname === item.to || pathname.startsWith(item.to + '/')
+}
+
+// Routes that open on a dark, full-bleed hero. Every other route opens on
+// paper, so the header starts in its dark-text variant there.
+function hasDarkHero(pathname) {
+  return (
+    ['/', '/about', '/industries', '/contact'].includes(pathname) ||
+    pathname.startsWith('/services/')
+  )
+}
+
+function UtilityStrip({ show, onDark }) {
+  const hours = site.hours[0]
+  return (
+    <div
+      className={`relative hidden transition-[grid-template-rows,opacity,visibility] duration-500 ease-editorial lg:grid ${
+        show ? 'visible grid-rows-[1fr] opacity-100' : 'invisible grid-rows-[0fr] opacity-0'
+      }`}
+    >
+      <div className="overflow-hidden">
+        <div className="mx-auto max-w-edge edge">
+          <div
+            className={`flex h-10 items-center justify-between border-b font-mono text-[0.64rem] uppercase tracking-[0.16em] transition-colors duration-500 ${
+              onDark ? 'border-white/10 text-white/75' : 'border-ink/10 text-ink-mute'
+            }`}
+          >
+            <div className="flex items-center gap-7">
+              <span className="flex items-center gap-2.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
+                </span>
+                {site.tagline}
+              </span>
+              <span className="hidden items-center gap-2 xl:flex">
+                <PinIcon className="h-3.5 w-3.5 text-ember" />
+                {site.contact.addressLines[1]}, Dubai
+              </span>
+            </div>
+            <div className="flex items-center gap-7">
+              <span className="flex items-center gap-2">
+                <ClockIcon className="h-3.5 w-3.5 text-ember" />
+                {hours.days} · {hours.time}
+              </span>
+              <a
+                href={`tel:${site.contact.phoneHref}`}
+                className={`flex items-center gap-2 transition-colors duration-300 ${
+                  onDark ? 'text-white hover:text-amber' : 'text-ink hover:text-ember'
+                }`}
+              >
+                <PhoneIcon className="h-3.5 w-3.5 text-ember" />
+                {site.contact.phone}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function Navbar() {
@@ -21,6 +81,9 @@ export default function Navbar() {
   const [hovered, setHovered] = useState(null)
   const { pathname } = useLocation()
   const closeTimer = useRef(null)
+
+  const { scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, { stiffness: 220, damping: 40, mass: 0.4 })
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -60,18 +123,16 @@ export default function Navbar() {
     setOpenMenu(null)
   }
 
-  // The bar turns solid on scroll or when the mobile sheet is open.
-  // An open desktop mega-menu keeps the bar in its cinematic over-hero state
-  // and drops a dark panel beneath it — read as one unit.
+  // Mobile: the bar turns solid on scroll or when the sheet is open.
+  // Desktop: on scroll the bar detaches into a floating glass island.
   const solid = scrolled || mobileOpen
-  const overHero = !solid
+  const onDark = hasDarkHero(pathname) && !solid
+  const island = scrolled
 
-  const cta = useMagnetic({ strength: 0.4 })
+  const cta = useMagnetic({ strength: 0.35 })
 
   const activeIndex = primaryNav.findIndex((i) => isActiveItem(i, pathname))
   const current = hovered !== null ? hovered : activeIndex
-
-  const barTextColor = overHero ? 'text-white' : 'text-ink'
 
   return (
     <header className="fixed inset-x-0 top-0 z-50" onMouseLeave={scheduleClose}>
@@ -82,48 +143,91 @@ export default function Navbar() {
         Skip to content
       </a>
 
-      <div className="relative">
-        {/* Solid glass layer (scrolled / mobile open) */}
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 bg-paper/80 backdrop-blur-xl transition-opacity duration-500 ease-editorial ${
-            solid ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ boxShadow: '0 1px 0 rgba(16,19,26,0.06), 0 22px 50px -32px rgba(16,19,26,0.45)' }}
-        />
-        {/* Cinematic scrim over hero (guarantees light-text legibility) */}
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-0 bg-gradient-to-b from-navy-950/70 via-navy-950/25 to-transparent transition-opacity duration-500 ease-editorial ${
-            overHero ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
-        {/* Ember hairline under solid bar */}
-        <span
-          aria-hidden="true"
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ember/35 to-transparent transition-opacity duration-500 ${
-            solid && !openMenu ? 'opacity-100' : 'opacity-0'
-          }`}
-        />
+      {/* Page dim behind an open mega menu */}
+      <AnimatePresence>
+        {openMenu && (
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            onMouseEnter={scheduleClose}
+            onClick={closeNow}
+            className="fixed inset-0 -z-10 hidden bg-navy-950/45 backdrop-blur-[3px] lg:block"
+          />
+        )}
+      </AnimatePresence>
 
+      {/* Cinematic scrim over dark heroes (guarantees light-text legibility) */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[calc(100%+3rem)] bg-gradient-to-b from-navy-950/80 via-navy-950/35 to-transparent transition-opacity duration-500 ease-editorial ${
+          onDark ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+      {/* Mobile solid glass layer */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 bg-paper/[0.97] backdrop-blur-xl transition-opacity duration-500 ease-editorial lg:hidden ${
+          solid ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{ boxShadow: '0 1px 0 rgba(16,19,26,0.06), 0 22px 50px -32px rgba(16,19,26,0.45)' }}
+      />
+      {/* Mobile scroll progress */}
+      <motion.span
+        aria-hidden="true"
+        style={{ scaleX: progress, background: 'var(--brand-gradient)' }}
+        className={`pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left transition-opacity duration-500 lg:hidden ${
+          solid && !mobileOpen ? 'opacity-100' : 'opacity-0'
+        }`}
+      />
+
+      <UtilityStrip show={!scrolled} onDark={hasDarkHero(pathname)} />
+
+      <div
+        className={`relative mx-auto max-w-edge edge transition-[padding] duration-500 ease-editorial ${
+          island ? 'lg:pt-3' : 'lg:pt-0'
+        }`}
+      >
         <div
-          className="relative mx-auto flex max-w-edge items-center justify-between edge"
-          style={{ height: 'var(--nav-h)' }}
+          className={`relative flex h-[5.25rem] items-center justify-between gap-6 transition-[height,padding] duration-500 ease-editorial ${
+            island ? 'lg:h-[4.75rem] lg:px-4 xl:px-5' : 'lg:h-[5.5rem] lg:px-0'
+          }`}
         >
+          {/* Desktop floating island */}
+          <span
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 hidden overflow-hidden rounded-2xl border border-white/70 bg-paper/[0.97] backdrop-blur-xl transition-[opacity,transform] duration-500 ease-editorial lg:block ${
+              island ? 'scale-100 opacity-100' : 'scale-[0.985] opacity-0'
+            }`}
+            style={{
+              boxShadow:
+                'inset 0 1px 0 rgba(255,255,255,0.8), 0 22px 50px -26px rgba(8,15,46,0.45), 0 3px 10px -4px rgba(8,15,46,0.12)',
+            }}
+          >
+            <motion.span
+              style={{ scaleX: progress, background: 'var(--brand-gradient)' }}
+              className="absolute inset-x-0 bottom-0 h-[2px] origin-left"
+            />
+          </span>
+
           {/* Logo */}
-          <Link to="/" className="group flex items-center" aria-label={`${site.name} — home`}>
+          <Link
+            to="/"
+            className="group relative z-10 flex shrink-0 items-center"
+            aria-label={`${site.name} — home`}
+          >
             <img
               src={site.logo}
               alt={site.name}
               width="782"
               height="215"
-              className={`w-auto transition-all duration-500 ease-editorial group-hover:scale-[1.03] ${
-                scrolled ? 'h-7 sm:h-8' : 'h-8 sm:h-10'
-              } ${
-                overHero
-                  ? 'brightness-0 invert drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)]'
-                  : ''
-              }`}
+              className={`w-auto transition-[height,filter,transform] duration-500 ease-editorial group-hover:scale-[1.025] ${
+                island
+                  ? 'h-11 lg:h-11 xl:h-14'
+                  : 'h-12 sm:h-[3.25rem] lg:h-[3.25rem] xl:h-16'
+              } ${onDark ? 'logo-on-dark' : ''}`}
             />
           </Link>
 
@@ -135,16 +239,20 @@ export default function Navbar() {
           >
             {primaryNav.map((item, i) => {
               const isPanel = Boolean(item.panel)
-              const active =
-                isActiveItem(item, pathname) || (isPanel && openMenu === item.panel)
+              const panelOpen = isPanel && openMenu === item.panel
+              const routeActive = isActiveItem(item, pathname)
               const showPill = i === current && current >= 0
-              const linkColor = active
-                ? overHero
+              const linkColor = panelOpen
+                ? onDark
                   ? 'text-amber'
                   : 'text-ember'
-                : overHero
-                  ? 'text-white/85 hover:text-white'
-                  : 'text-ink/70 hover:text-ink'
+                : routeActive
+                  ? onDark
+                    ? 'text-white'
+                    : 'text-ink'
+                  : onDark
+                    ? 'text-white/75 hover:text-white'
+                    : 'text-ink/65 hover:text-ink'
               return (
                 <div
                   key={item.to}
@@ -159,18 +267,26 @@ export default function Navbar() {
                       layoutId="nav-pill"
                       transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                       className={`absolute inset-0 rounded-full ${
-                        overHero
+                        onDark
                           ? 'bg-white/10 ring-1 ring-inset ring-white/15'
                           : 'bg-ink/[0.05] ring-1 ring-inset ring-ink/10'
                       }`}
+                    />
+                  )}
+                  {routeActive && (
+                    <motion.span
+                      layoutId="nav-active"
+                      transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                      className="absolute inset-x-0 -bottom-1.5 mx-auto h-[3px] w-5 rounded-full"
+                      style={{ background: 'var(--brand-gradient)' }}
                     />
                   )}
                   <NavLink
                     to={item.to}
                     onFocus={() => (isPanel ? openPanel(item.panel) : closeNow())}
                     aria-haspopup={isPanel ? 'true' : undefined}
-                    aria-expanded={isPanel ? openMenu === item.panel : undefined}
-                    className={`relative z-10 flex items-center gap-1.5 px-4 py-2 font-mono text-[0.76rem] uppercase tracking-[0.12em] transition-colors duration-300 ${linkColor}`}
+                    aria-expanded={isPanel ? panelOpen : undefined}
+                    className={`relative z-10 flex items-center gap-1.5 px-3 py-2 font-display text-[0.95rem] font-medium tracking-[-0.01em] transition-colors duration-300 xl:px-4 ${linkColor}`}
                   >
                     {item.label}
                     {isPanel && (
@@ -178,7 +294,7 @@ export default function Navbar() {
                         aria-hidden="true"
                         viewBox="0 0 10 6"
                         className={`h-[5px] w-[9px] transition-transform duration-300 ${
-                          openMenu === item.panel ? 'rotate-180' : ''
+                          panelOpen ? 'rotate-180' : ''
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -193,67 +309,103 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Magnetic 3D CTA */}
-          <motion.div
-            ref={cta.ref}
-            style={{ x: cta.x, y: cta.y }}
-            {...cta.handlers}
-            className="hidden lg:block"
-          >
-            <Link
-              to={quoteCta.to}
-              className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-gradient-to-br from-ember to-ember-600 px-6 py-3 font-mono text-[0.72rem] uppercase tracking-[0.16em] text-white will-change-transform"
-              style={{
-                boxShadow:
-                  '0 12px 30px -10px rgba(242,101,34,0.65), inset 0 1px 0 rgba(255,255,255,0.28)',
-              }}
+          {/* Desktop actions */}
+          <div className="relative hidden items-center gap-4 lg:flex">
+            <a
+              href={`tel:${site.contact.phoneHref}`}
+              aria-label={`Call ${site.contact.phone}`}
+              className={`group hidden items-center gap-3 transition-colors duration-300 xl:flex ${
+                onDark ? 'text-white' : 'text-ink'
+              }`}
             >
-              <span className="relative z-10">{quoteCta.label}</span>
               <span
-                aria-hidden="true"
-                className="relative z-10 inline-block transition-transform duration-400 ease-editorial group-hover:translate-x-1"
+                className={`flex h-10 w-10 items-center justify-center rounded-full ring-1 transition-all duration-300 ${
+                  onDark
+                    ? 'ring-white/25 group-hover:bg-white group-hover:text-ink'
+                    : 'ring-ink/15 group-hover:bg-ink group-hover:text-white'
+                }`}
               >
-                →
+                <PhoneIcon className="h-4 w-4" />
               </span>
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 ease-editorial group-hover:translate-x-[120%]"
-              />
-            </Link>
-          </motion.div>
+              <span className="hidden flex-col leading-tight 2xl:flex">
+                <span className="font-mono text-[0.58rem] uppercase tracking-[0.2em] opacity-60">
+                  Talk to an engineer
+                </span>
+                <span className="text-sm font-semibold">{site.contact.phone}</span>
+              </span>
+            </a>
+
+            <motion.div ref={cta.ref} style={{ x: cta.x, y: cta.y }} {...cta.handlers}>
+              <Link
+                to={quoteCta.to}
+                className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full py-1.5 pl-5 pr-1.5 font-mono text-[0.68rem] font-medium uppercase tracking-[0.12em] text-white will-change-transform xl:pl-6"
+                style={{
+                  background: 'var(--brand-gradient)',
+                  boxShadow:
+                    '0 14px 30px -12px rgba(242,101,34,0.7), inset 0 1px 0 rgba(255,255,255,0.3)',
+                }}
+              >
+                <span className="relative z-10">{quoteCta.label}</span>
+                <span className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 ring-1 ring-inset ring-white/35 transition-all duration-500 ease-editorial group-hover:-rotate-45 group-hover:bg-white group-hover:text-ember">
+                  <ArrowIcon className="h-3.5 w-3.5" />
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -translate-x-[120%] bg-gradient-to-r from-transparent via-white/35 to-transparent transition-transform duration-700 ease-editorial group-hover:translate-x-[120%]"
+                />
+              </Link>
+            </motion.div>
+          </div>
 
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="relative z-50 flex h-10 w-10 flex-col items-center justify-center gap-[6px] lg:hidden"
+            className={`relative z-50 flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-full ring-1 transition-colors duration-300 lg:hidden ${
+              onDark ? 'ring-white/25 bg-white/5' : 'ring-ink/15 bg-white/60'
+            }`}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
           >
-            <span className={`h-[2px] w-7 transition-all duration-300 ${barTextColor === 'text-white' ? 'bg-white' : 'bg-ink'} ${mobileOpen ? 'translate-y-[8px] rotate-45' : ''}`} />
-            <span className={`h-[2px] w-7 transition-all duration-300 ${barTextColor === 'text-white' ? 'bg-white' : 'bg-ink'} ${mobileOpen ? 'opacity-0' : ''}`} />
-            <span className={`h-[2px] w-7 transition-all duration-300 ${barTextColor === 'text-white' ? 'bg-white' : 'bg-ink'} ${mobileOpen ? '-translate-y-[8px] -rotate-45' : ''}`} />
+            {[
+              mobileOpen ? 'w-5 translate-y-[7px] rotate-45' : 'w-5',
+              mobileOpen ? 'w-5 opacity-0' : 'w-3.5 translate-x-[3px]',
+              mobileOpen ? 'w-5 -translate-y-[7px] -rotate-45' : 'w-5',
+            ].map((cls, i) => (
+              <span
+                key={i}
+                className={`h-[2px] rounded-full transition-all duration-300 ${onDark ? 'bg-white' : 'bg-ink'} ${cls}`}
+              />
+            ))}
           </button>
         </div>
-
-        {/* Desktop mega panels */}
-        <AnimatePresence>
-          {openMenu && (
-            <motion.div
-              key={openMenu}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.32, ease: EASE }}
-              className="absolute inset-x-0 top-full hidden origin-top lg:block"
-              onMouseEnter={() => openPanel(openMenu)}
-              onMouseLeave={scheduleClose}
-            >
-              {openMenu === 'services' && <ServicesMegaMenu onNavigate={closeNow} />}
-              {openMenu === 'industries' && <IndustriesMenu onNavigate={closeNow} />}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Desktop mega panels */}
+      <AnimatePresence>
+        {openMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.32, ease: EASE }}
+            className="absolute inset-x-0 top-full hidden pt-3 lg:block"
+            onMouseEnter={() => openPanel(openMenu)}
+            onMouseLeave={scheduleClose}
+          >
+            <div className="mx-auto max-w-edge edge">
+              <motion.div
+                key={openMenu}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: EASE }}
+              >
+                {openMenu === 'services' && <ServicesMegaMenu onNavigate={closeNow} />}
+                {openMenu === 'industries' && <IndustriesMenu onNavigate={closeNow} />}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </header>
