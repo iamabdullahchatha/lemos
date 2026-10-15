@@ -1,0 +1,12 @@
+# robots.txt — Lemos International
+# https://lemosinternational.com
+
+# Allow all well-behaved crawlers full access to the public site.
+User-agent: *
+Allow: /
+
+# Internal / non-indexable pages
+Disallow: /styleguide
+
+# XML sitemap
+Sitemap: https://lemosinternational.com/sitemap.xml
