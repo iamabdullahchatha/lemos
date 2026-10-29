@@ -3,10 +3,10 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
 // Absolute site origin for social-share meta tags (WhatsApp ignores relative og:image URLs).
-// Set SITE_URL (e.g. https://lemosinternational.com) to override; otherwise the public
+// Set SITE_URL (e.g. https://lemosinternational.ae) to override; otherwise the public
 // production domain is used. Per-deploy Vercel URLs are avoided: they can sit behind
 // Vercel auth, which blocks link-preview crawlers.
-const DEFAULT_SITE_URL = 'https://lemos-theta.vercel.app'
+const DEFAULT_SITE_URL = 'https://lemosinternational.ae'
 
 function resolveSiteUrl() {
   const raw = process.env.SITE_URL || process.env.VITE_SITE_URL || DEFAULT_SITE_URL

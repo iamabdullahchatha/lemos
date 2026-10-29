@@ -1,5 +1,5 @@
 # robots.txt — Lemos International
-# https://lemosinternational.com
+# https://lemosinternational.ae
 
 # Allow all well-behaved crawlers full access to the public site.
 User-agent: *
@@ -9,4 +9,4 @@ Allow: /
 Disallow: /styleguide
 
 # XML sitemap
-Sitemap: https://lemosinternational.com/sitemap.xml
+Sitemap: https://lemosinternational.ae/sitemap.xml
